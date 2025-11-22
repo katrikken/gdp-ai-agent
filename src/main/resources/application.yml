@@ -33,4 +33,4 @@ spring:
       # Specifies the SQL file that defines the database structure (schema)
       schema-locations: classpath:sql/schema.sql
       # Specifies the SQL file that populates the database with initial data
-      data-locations: classpath:sql/data.sql
+      #data-locations: classpath:sql/data.sql
