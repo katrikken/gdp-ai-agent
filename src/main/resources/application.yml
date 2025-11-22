@@ -1,0 +1,36 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    # Use an in-memory H2 database named 'testdb'
+    url: jdbc:h2:mem:testdb
+    driverClassName: org.h2.Driver
+    username: sa
+    password: password
+
+  # H2 Database specific settings
+  h2:
+    # Enable the H2 web console for viewing the database structure/data
+    enabled: true
+    # Access the console at http://localhost:8080/h2-console
+    path: /h2-console
+
+  # JPA (Hibernate) configuration
+  jpa:
+    # We are using manual schema scripts (schema.sql), so disable Hibernate's automatic DDL generation
+    hibernate:
+      ddl-auto: none
+    # Set the dialect specifically for H2
+    database-platform: org.hibernate.dialect.H2Dialect
+    show-sql: true
+
+  # Database Initialization (runs the SQL scripts)
+  sql:
+    init:
+      # Enable initialization scripts
+      mode: always
+      # Specifies the SQL file that defines the database structure (schema)
+      schema-locations: classpath:sql/schema.sql
+      # Specifies the SQL file that populates the database with initial data
+      data-locations: classpath:sql/data.sql
