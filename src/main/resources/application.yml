@@ -34,3 +34,8 @@ spring:
       schema-locations: classpath:sql/schema.sql
       # Specifies the SQL file that populates the database with initial data
       #data-locations: classpath:sql/data.sql
+app:
+  data:
+    unzip-dir: data
+    gdp-url: https://api.worldbank.org/v2/en/indicator/NY.GDP.MKTP.CD?downloadformat=csv
+    population-url: https://api.worldbank.org/v2/en/indicator/SP.POP.TOTL?downloadformat=csv
