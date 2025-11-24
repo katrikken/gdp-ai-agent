@@ -15,38 +15,32 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 @Log4j2
-public class GdpLoader {
+public class PopulationLoader {
 
     @Autowired
     public final DataLoader dataLoader;
     @Autowired
     public final CountryCsvParser countryCsvParser;
     @Autowired
-    public final GdpCsvParser gdpCsvParser;
-    private final String GDP_DATA_INDICATOR = "NY.GDP.MKTP.CD";
-    private final String COUNTRY_METADATA = "Metadata_Country";
-    @Value("${app.data.gdp-url}")
-    private String gdpUrl;
+    public final PopulationCsvParser populationCsvParser;
+    private final String POPULATION_DATA_INDICATOR = "SP.POP.TOTL";
+    @Value("${app.data.population-url}")
+    private String populationUrl;
 
     @PostConstruct
     public void loadGdpData() {
         try {
-            List<String> files = dataLoader.loadZipFromUrlAndUnzip(gdpUrl);
+            List<String> files = dataLoader.loadZipFromUrlAndUnzip(populationUrl);
             if (files == null || files.isEmpty()) {
                 log.error("GDP Data returned is empty");
             } else {
-                Optional<String> countryDataFilePath = files.stream()
-                        .filter(s -> s.startsWith(COUNTRY_METADATA))
+                Optional<String> populationDataFilePath = files.stream()
+                        .filter(s -> s.contains(POPULATION_DATA_INDICATOR))
                         .findFirst();
-                countryDataFilePath.ifPresent(countryCsvParser::loadAndSaveCsvData);
-
-                Optional<String> gdpDataFilePath = files.stream()
-                        .filter(s -> s.contains(GDP_DATA_INDICATOR))
-                        .findFirst();
-                gdpDataFilePath.ifPresent(gdpCsvParser::loadAndSaveCsvData);
+                populationDataFilePath.ifPresent(populationCsvParser::loadAndSaveCsvData);
             }
         } catch (IOException | URISyntaxException e) {
-            log.error("Could not load GDP zip from provided url {}", gdpUrl, e);
+            log.error("Could not load GDP zip from provided url {}", populationUrl, e);
         }
     }
 }

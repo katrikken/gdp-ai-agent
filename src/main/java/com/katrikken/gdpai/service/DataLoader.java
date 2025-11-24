@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -20,17 +21,17 @@ import java.util.zip.ZipInputStream;
 @Log4j2
 public class DataLoader {
 
-    // Set to store the URLs that have already been successfully downloaded and processed.
-    private final Set<String> loadedUrls = Collections.synchronizedSet(new HashSet<>());
-
-    @Value("${app.data.unzip-dir:data}")
-    private String unzipDirectoryPath;
-
-    // The actual Path object for the target extraction directory
-    private Path targetDir;
-
     // Buffer size for reading streams
     private static final int BUFFER_SIZE = 4096;
+    // Set to store the URLs that have already been successfully downloaded and processed.
+    private final Set<String> loadedUrls = Collections.synchronizedSet(new HashSet<>());
+    @Value("${app.data.unzip-dir:data}")
+    private String unzipDirectoryPath;
+    @Value("${app.data.temp-dir:temp}")
+    private String tempDirectoryPath;
+    // The actual Path object for the target extraction directory
+    private Path targetDir;
+    private Path tempDir;
 
     /**
      * Initializes the target directory structure on startup.
@@ -40,6 +41,11 @@ public class DataLoader {
         this.targetDir = Paths.get(unzipDirectoryPath);
         // Create the directory if it does not exist
         Files.createDirectories(this.targetDir);
+
+        this.tempDir = Paths.get(tempDirectoryPath);
+        // Create the directory if it does not exist
+        Files.createDirectories(this.tempDir);
+
         log.info("Initialized DataLoader. Unzipped files will be stored in: {}", this.targetDir.toAbsolutePath());
     }
 
@@ -50,7 +56,7 @@ public class DataLoader {
      * @return A list of absolute file paths to the newly extracted files.
      * @throws IOException if there is an issue with downloading or file handling.
      */
-    public List<String> loadZipFromUrlAndUnzip(String url) throws IOException {
+    public List<String> loadZipFromUrlAndUnzip(String url) throws IOException, URISyntaxException {
         if (loadedUrls.contains(url)) {
             log.warn("URL '{}' has already been loaded. Skipping download.", url);
             return List.of();
@@ -62,8 +68,9 @@ public class DataLoader {
 
         try {
             URL zipUrl = new URL(url);
-            String fileName = Paths.get(zipUrl.getPath()).getFileName().toString();
-            tempZipFile = Files.createTempFile(fileName + "-", ".zip");
+            Path downloadedZipPath = Paths.get(zipUrl.toURI());
+            String fileName = downloadedZipPath.getFileName().toString();
+            tempZipFile = tempDir.resolve(fileName + "-.zip");
 
             try (InputStream in = zipUrl.openStream();
                  FileOutputStream fos = new FileOutputStream(tempZipFile.toFile())) {
@@ -84,6 +91,9 @@ public class DataLoader {
         } catch (IOException e) {
             log.error("Failed to download or unzip data from URL {}: {}", url, e.getMessage(), e);
             throw e;
+        } catch (URISyntaxException ex) {
+            log.error("Failed to get URL {}: {}", url, ex.getMessage(), ex);
+            throw ex;
         } finally {
             // Clean up the temporary downloaded ZIP file
             if (tempZipFile != null) {
