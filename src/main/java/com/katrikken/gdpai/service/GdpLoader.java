@@ -21,6 +21,8 @@ public class GdpLoader {
     public final CountryCsvParser countryCsvParser;
     @Value("${app.data.gdp-url}")
     private String gdpUrl;
+    private final String GDP_DATA_INDICATOR = "NY.GDP.MKTP.CD";
+    private final String COUNTRY_METADATA = "Metadata_Country";
 
     public void loadGdpData() {
         try {
@@ -29,7 +31,7 @@ public class GdpLoader {
                 log.error("GDP Data returned is empty");
             } else {
                 Optional<String> countryDataFilePath = files.stream()
-                        .filter(s -> s.startsWith("Metadata_Country"))
+                        .filter(s -> s.startsWith(COUNTRY_METADATA))
                         .findFirst();
                 countryDataFilePath.ifPresent(countryCsvParser::loadAndSaveCsvData);
             }

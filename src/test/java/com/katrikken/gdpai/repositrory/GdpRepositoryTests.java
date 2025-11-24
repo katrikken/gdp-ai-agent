@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 
@@ -18,18 +19,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DataJpaTest
 public class GdpRepositoryTests {
 
-    // Repositories injected by Spring for testing
-    @Autowired
-    private GdpRepository gdpRepository;
-    @Autowired
-    private CountryRepository countryRepository;
-
-
     // Helper data for testing
     private static final List<String> COUNTRY_CODES = Arrays.asList("USA", "CAN", "MEX", "GBR", "FRA");
     private static final List<Integer> YEARS = Arrays.asList(2020, 2021, 2022, 2023, 2024);
     private static final String TEST_COUNTRY_CODE = "USA";
     private static final Integer TEST_YEAR = 2022;
+    // Repositories injected by Spring for testing
+    @Autowired
+    private GdpRepository gdpRepository;
+    @Autowired
+    private CountryRepository countryRepository;
 
     /**
      * Data setup method run before each test.
@@ -38,14 +37,14 @@ public class GdpRepositoryTests {
     @BeforeEach
     void setupData() {
         setupCountries(COUNTRY_CODES);
-        long gdpCounter = 10000000000L; // Start with a large base number for GDP
+        BigDecimal gdpCounter = new BigDecimal(10000000000L); // Start with a large base number for GDP
 
         for (String countryCode : COUNTRY_CODES) {
             for (int year : YEARS) {
                 CountryYearId id = new CountryYearId(countryCode, year);
                 Gdp Gdp = new Gdp(id, gdpCounter);
                 gdpRepository.save(Gdp);
-                gdpCounter += 100000000L;
+                gdpCounter.add(new BigDecimal(100000000L));
             }
         }
     }
