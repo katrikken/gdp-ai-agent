@@ -55,6 +55,17 @@ public class GdpCsvParserTest {
         assertThat(firstGdp.getId().getCountryCode()).isEqualTo("ABW");
         assertThat(firstGdp.getId().getDataYear()).isEqualTo(1986);
         assertThat(firstGdp.getGdp()).isEqualTo(new BigDecimal("405586592.178771"));
+
+        gdp = result.stream().filter(g -> g.getId().getCountryCode().equals("AGO"))
+                .sorted(Comparator.comparingInt(d -> d.getId().getDataYear()))
+                .toList();
+        assertThat(gdp).isNotEmpty().hasSize(45);
+        firstGdp = gdp.get(0);
+        assertThat(firstGdp.getId().getCountryCode()).isEqualTo("AGO");
+        assertThat(firstGdp.getId().getDataYear()).isEqualTo(1980);
+        assertThat(firstGdp.getGdp()).isEqualTo(new BigDecimal("5930503400.96263"));
+        Gdp lastGdp = gdp.get(44);
+        assertThat(lastGdp.getGdp()).isEqualTo(new BigDecimal("80396942241.6233"));
     }
 
 }
