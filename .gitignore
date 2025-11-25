@@ -6,3 +6,5 @@ out/
 *.iml
 target
 temp
+frontend/node_modules
+frontend/dist

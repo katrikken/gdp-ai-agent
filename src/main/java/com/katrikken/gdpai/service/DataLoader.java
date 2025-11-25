@@ -68,6 +68,7 @@ public class DataLoader {
 
         try {
             URL zipUrl = new URL(url);
+            //todo fix
             Path downloadedZipPath = Paths.get(zipUrl.toURI());
             String fileName = downloadedZipPath.getFileName().toString();
             tempZipFile = tempDir.resolve(fileName + "-.zip");
