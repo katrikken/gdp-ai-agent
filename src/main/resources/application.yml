@@ -2,6 +2,15 @@ server:
   port: 8080
 
 spring:
+  ai:
+    vertex:
+      ai:
+        gemini:
+          project-id: <YOUR-GOOGLE-CLOUD-PROJECT-ID>
+          location: "europe-west1"
+          model: "gemini-2.0-flash-lite"
+
+
   datasource:
     # Use an in-memory H2 database named 'testdb'
     url: jdbc:h2:mem:testdb
