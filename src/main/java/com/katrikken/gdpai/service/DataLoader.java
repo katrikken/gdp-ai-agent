@@ -5,7 +5,6 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
@@ -13,7 +12,12 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -21,8 +25,6 @@ import java.util.zip.ZipInputStream;
 @Log4j2
 public class DataLoader {
 
-    // Buffer size for reading streams
-    private static final int BUFFER_SIZE = 4096;
     // Set to store the URLs that have already been successfully downloaded and processed.
     private final Set<String> loadedUrls = Collections.synchronizedSet(new HashSet<>());
     @Value("${app.data.unzip-dir:data}")
@@ -68,19 +70,11 @@ public class DataLoader {
 
         try {
             URL zipUrl = new URL(url);
-            //todo fix
-            Path downloadedZipPath = Paths.get(zipUrl.toURI());
-            String fileName = downloadedZipPath.getFileName().toString();
+            String fileName = getFileName(zipUrl);
             tempZipFile = tempDir.resolve(fileName + "-.zip");
 
-            try (InputStream in = zipUrl.openStream();
-                 FileOutputStream fos = new FileOutputStream(tempZipFile.toFile())) {
-
-                byte[] buffer = new byte[BUFFER_SIZE];
-                int bytesRead;
-                while ((bytesRead = in.read(buffer)) != -1) {
-                    fos.write(buffer, 0, bytesRead);
-                }
+            try (InputStream in = zipUrl.openStream()) {
+                Files.copy(in, tempZipFile, StandardCopyOption.REPLACE_EXISTING);
             }
             log.info("Downloaded ZIP file successfully to: {}", tempZipFile.toAbsolutePath());
 
@@ -92,23 +86,33 @@ public class DataLoader {
         } catch (IOException e) {
             log.error("Failed to download or unzip data from URL {}: {}", url, e.getMessage(), e);
             throw e;
-        } catch (URISyntaxException ex) {
-            log.error("Failed to get URL {}: {}", url, ex.getMessage(), ex);
-            throw ex;
         } finally {
-            // Clean up the temporary downloaded ZIP file
-            if (tempZipFile != null) {
-                try {
-                    Files.deleteIfExists(tempZipFile);
-                    log.debug("Deleted temporary ZIP file: {}", tempZipFile.toAbsolutePath());
-                } catch (IOException e) {
-                    // Log but do not interrupt the flow
-                    log.warn("Could not delete temporary file: {}", tempZipFile, e);
-                }
-            }
+            cleanupTempFile(tempZipFile);
         }
 
         return extractedFiles;
+    }
+
+    private String getFileName(URL zipUrl) {
+        String path = zipUrl.getPath();
+        String fileName = path.substring(path.lastIndexOf('/') + 1);
+
+        // Safety check: ensure the file has a sensible name and extension
+        if (fileName == null || !fileName.contains(".")) {
+            fileName = "downloaded_data";
+        }
+        return fileName;
+    }
+
+    private void cleanupTempFile(Path tempZipFile) {
+        if (tempZipFile != null) {
+            try {
+                Files.deleteIfExists(tempZipFile);
+                log.debug("Deleted temporary ZIP file: {}", tempZipFile.toAbsolutePath());
+            } catch (IOException e) {
+                log.warn("Could not delete temporary file: {}", tempZipFile, e);
+            }
+        }
     }
 
     /**
@@ -145,13 +149,7 @@ public class DataLoader {
                     }
 
                     // Write the file content
-                    try (FileOutputStream fos = new FileOutputStream(newFile.toFile())) {
-                        byte[] buffer = new byte[BUFFER_SIZE];
-                        int len;
-                        while ((len = zis.read(buffer)) > 0) {
-                            fos.write(buffer, 0, len);
-                        }
-                    }
+                    Files.copy(zis, newFile, StandardCopyOption.REPLACE_EXISTING);
                     extractedFiles.add(newFile.toAbsolutePath().toString());
                     log.debug("Extracted file: {}", newFile.toAbsolutePath());
                 }
