@@ -13,15 +13,21 @@ public interface PopulationRepository extends JpaRepository<Population, CountryY
     /**
      * Finds all population data records for a specific country code.
      */
-    List<Population> findByIdCountryCode(String countryCode);
+    List<Population> findByIdCountryCodeOrderByIdDataYear(String countryCode);
 
     /**
      * Finds all population data for a specific year.
      */
-    List<Population> findByIdDataYear(int year);
+    List<Population> findByIdDataYearOrderByIdCountryCode(int year);
 
     /**
      * Finds a specific record by country and year.
      */
     Population findByIdCountryCodeAndIdDataYear(String countryCode, int year);
+
+    /**
+     * Finds all Population records where the year is between the given startYear and endYear (inclusive).
+     */
+    List<Population> findByIdDataYearBetweenOrderByIdCountryCode(int startYear, int endYear);
+
 }

@@ -13,15 +13,20 @@ public interface GdpRepository extends JpaRepository<Gdp, CountryYearId> {
     /**
      * Finds all GDP data records for a specific country code.
      */
-    List<Gdp> findByIdCountryCode(String countryCode);
+    List<Gdp> findByIdCountryCodeOrderByIdDataYear(String countryCode);
 
     /**
      * Finds all GDP data for a specific year.
      */
-    List<Gdp> findByIdDataYear(int dataYear);
+    List<Gdp> findByIdDataYearOrderByIdCountryCode(int dataYear);
 
     /**
      * Finds a specific record by country and year.
      */
     Gdp findByIdCountryCodeAndIdDataYear(String countryCode, int dataYear);
+
+    /**
+     * Finds all GDP records where the year is between the given startYear and endYear (inclusive).
+     */
+    List<Gdp> findByIdDataYearBetweenOrderByIdCountryCode(int startYear, int endYear);
 }

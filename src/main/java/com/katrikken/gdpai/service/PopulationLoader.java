@@ -24,6 +24,7 @@ public class PopulationLoader {
     @Autowired
     public final PopulationCsvParser populationCsvParser;
     private final String POPULATION_DATA_INDICATOR = "SP.POP.TOTL";
+    private final String COUNTRY_METADATA = "Metadata_Country";
     @Value("${app.data.population-url}")
     private String populationUrl;
 
@@ -34,6 +35,11 @@ public class PopulationLoader {
             if (files == null || files.isEmpty()) {
                 log.error("GDP Data returned is empty");
             } else {
+                Optional<String> countryDataFilePath = files.stream()
+                        .filter(s -> s.startsWith(COUNTRY_METADATA))
+                        .findFirst();
+                countryDataFilePath.ifPresent(countryCsvParser::loadAndSaveCsvData);
+
                 Optional<String> populationDataFilePath = files.stream()
                         .filter(s -> s.contains(POPULATION_DATA_INDICATOR))
                         .findFirst();

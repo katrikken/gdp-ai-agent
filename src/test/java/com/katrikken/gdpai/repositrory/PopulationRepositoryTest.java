@@ -18,15 +18,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DataJpaTest
 public class PopulationRepositoryTest {
 
-    @Autowired
-    private PopulationRepository populationRepository;
-    @Autowired
-    private CountryRepository countryRepository;
-
     private static final List<String> COUNTRY_CODES = Arrays.asList("USA", "CAN", "MEX", "GBR", "FRA");
     private static final List<Integer> YEARS = Arrays.asList(2020, 2021, 2022, 2023, 2024);
     private static final String TEST_COUNTRY_CODE = "USA";
     private static final Integer TEST_YEAR = 2022;
+    @Autowired
+    private PopulationRepository populationRepository;
+    @Autowired
+    private CountryRepository countryRepository;
 
     private void setupCountries(List<String> countryCodes) {
         for (String code : countryCodes) {
@@ -64,11 +63,13 @@ public class PopulationRepositoryTest {
 
     @Test
     void testFindPopulationByIdCountryCode_shouldReturnAllFiveYearsOfData() {
-        List<Population> result = populationRepository.findByIdCountryCode(TEST_COUNTRY_CODE);
+        List<Population> result = populationRepository.findByIdCountryCodeOrderByIdDataYear(TEST_COUNTRY_CODE);
 
         assertThat(result)
                 .as("Check if 5 records are returned for the test country")
                 .hasSize(5);
+
+        assertThat(result.get(0).getId().getDataYear()).isEqualTo(2020);
 
         assertThat(result.stream().map(d -> d.getId().getCountryCode()).allMatch(TEST_COUNTRY_CODE::equals))
                 .as("Check that all returned records belong to the correct country")
@@ -78,12 +79,14 @@ public class PopulationRepositoryTest {
     @Test
     void testFindPopulationByIdYear_shouldReturnAllFiveCountriesData() {
 
-        List<Population> result = populationRepository.findByIdDataYear(TEST_YEAR);
+        List<Population> result = populationRepository.findByIdDataYearOrderByIdCountryCode(TEST_YEAR);
 
 
         assertThat(result)
                 .as("Check if 5 records are returned for the test year")
                 .hasSize(5);
+
+        assertThat(result.getFirst().getId().getCountryCode()).isEqualTo("CAN");
 
         assertThat(result.stream().map(d -> d.getId().getDataYear()).allMatch(TEST_YEAR::equals))
                 .as("Check that all returned records belong to the correct year")

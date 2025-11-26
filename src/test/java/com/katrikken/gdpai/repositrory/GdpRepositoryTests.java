@@ -68,12 +68,14 @@ public class GdpRepositoryTests {
         // Arrange is done in @BeforeEach
 
         // Act
-        List<Gdp> result = gdpRepository.findByIdCountryCode(TEST_COUNTRY_CODE);
+        List<Gdp> result = gdpRepository.findByIdCountryCodeOrderByIdDataYear(TEST_COUNTRY_CODE);
 
         // Assert
         assertThat(result)
                 .as("Check if 5 records are returned for the test country")
                 .hasSize(5);
+
+        assertThat(result.get(0).getId().getDataYear()).isEqualTo(2020);
 
         assertThat(result.stream().map(d -> d.getId().getCountryCode()).allMatch(TEST_COUNTRY_CODE::equals))
                 .as("Check that all returned records belong to the correct country")
@@ -81,11 +83,15 @@ public class GdpRepositoryTests {
     }
 
     @Test
-    void testFindGdpByIdYear_shouldReturnAllFiveCountriesData() {
-        // Arrange is done in @BeforeEach
+    void testFindByBetweenYears_shouldReturnGivenYearsOfData() {
+        List<Gdp> result = gdpRepository.findByIdDataYearBetweenOrderByIdCountryCode(2021, 2023);
 
-        // Act
-        List<Gdp> result = gdpRepository.findByIdDataYear(TEST_YEAR);
+        assertThat(result).hasSize(15);
+    }
+
+    @Test
+    void testFindGdpByIdYear_shouldReturnAllFiveCountriesData() {
+        List<Gdp> result = gdpRepository.findByIdDataYearOrderByIdCountryCode(TEST_YEAR);
 
         // Assert
         assertThat(result)

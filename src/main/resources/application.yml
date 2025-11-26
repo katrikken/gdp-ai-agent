@@ -19,7 +19,7 @@ spring:
     password: password
 
   # H2 Database specific settings
-  h2:
+  h2.console:
     # Enable the H2 web console for viewing the database structure/data
     enabled: true
     # Access the console at http://localhost:8080/h2-console
