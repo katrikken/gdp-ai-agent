@@ -6,6 +6,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -25,10 +26,12 @@ public class PopulationLoader {
     public final PopulationCsvParser populationCsvParser;
     private final String POPULATION_DATA_INDICATOR = "SP.POP.TOTL";
     private final String COUNTRY_METADATA = "Metadata_Country";
+    private final String METADATA = "Metadata_";
     @Value("${app.data.population-url}")
     private String populationUrl;
 
     @PostConstruct
+    @Transactional
     public void loadGdpData() {
         try {
             List<String> files = dataLoader.loadZipFromUrlAndUnzip(populationUrl);
@@ -41,7 +44,7 @@ public class PopulationLoader {
                 countryDataFilePath.ifPresent(countryCsvParser::loadAndSaveCsvData);
 
                 Optional<String> populationDataFilePath = files.stream()
-                        .filter(s -> s.contains(POPULATION_DATA_INDICATOR))
+                        .filter(s -> s.contains(POPULATION_DATA_INDICATOR) && !s.contains(METADATA))
                         .findFirst();
                 populationDataFilePath.ifPresent(populationCsvParser::loadAndSaveCsvData);
             }

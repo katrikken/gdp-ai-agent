@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -32,6 +33,7 @@ public abstract class CsvParser<C, I, R extends JpaRepository<C, I>> {
      * @param filePath The local path to the CSV file.
      * @return A list of successfully parsed Country objects.
      */
+    @Transactional
     public List<C> loadAndSaveCsvData(String filePath) {
         List<C> dataList = new ArrayList<>();
         log.info("Starting CSV file processing from path: {}", filePath);
@@ -43,7 +45,6 @@ public abstract class CsvParser<C, I, R extends JpaRepository<C, I>> {
                 return dataList;
             }
 
-            // 2. Iterate over the records (starting from index 1 to skip header)
             for (CsvRow csvRecord : rawRecords) {
                 Optional<Set<C>> dataEntities = parseLine(csvRecord.getRow(), csvRecord.getRowNumber());
 
