@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Send, Loader2 } from 'lucide-react';
 
-const API_ENDPOINT = 'http://localhost:8080/api/chat';
+const API_ENDPOINT = 'http://localhost:8080/chat';
 
 const Message = ({ text, isUser, isThinking }) => (
   <div className={`flex w-full ${isUser ? 'justify-end' : 'justify-start'}`}>
@@ -100,7 +100,6 @@ const App = () => {
                 <span className="bg-blue-600 w-3 h-3 rounded-full mr-2 animate-pulse"></span>
                 GDP-AI Data Agent
             </h1>
-            <span className="text-sm text-gray-500">Connected to JPA Data via Function Calling</span>
         </div>
 
         {/* Message Area */}

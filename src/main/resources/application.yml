@@ -2,6 +2,8 @@ server:
   port: 8080
 
 spring:
+  config:
+    import: system-prompt.yml
   ai:
     vertex:
       ai:

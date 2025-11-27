@@ -8,7 +8,6 @@ import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.function.Function;
 
 @Service
 @RequiredArgsConstructor
@@ -23,21 +22,19 @@ public class CountryToolService {
      * @return a Function
      */
     @Tool(description = "Takes a country name (String) and returns corresponding country code (String)")
-    public Function<String, String> countryNameToCountryCodeTool() {
-        return (String name) -> {
-            log.info("CountryNameToCountryCodeTool start with name {} ", name);
-            String response;
-            List<Country> countries = repository.findByNameContaining(name);
-            if (countries.isEmpty()) {
+    public String countryNameToCountryCodeTool(String name) {
+        log.info("CountryNameToCountryCodeTool start with name {} ", name);
+        String response;
+        List<Country> countries = repository.findByNameContaining(name);
+        if (countries.isEmpty()) {
 
-                response = String.format("Error: could not find Country code for provided Country name %s", name);
-            } else if (countries.size() != 1) {
-                response = String.format("Error: several countries match provided country name %s", name);
-            }
+            response = String.format("Error: could not find Country code for provided Country name %s", name);
+        } else if (countries.size() != 1) {
+            response = String.format("Error: several countries match provided country name %s", name);
+        }
 
-            response = countries.getFirst().getCountryCode();
-            log.info("CountryNameToCountryCodeTool end with name {} and response {}", name, response);
-            return response;
-        };
+        response = countries.getFirst().getCountryCode();
+        log.info("CountryNameToCountryCodeTool end with name {} and response {}", name, response);
+        return response;
     }
 }

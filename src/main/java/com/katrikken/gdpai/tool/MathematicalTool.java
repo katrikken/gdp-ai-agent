@@ -6,72 +6,65 @@ import org.springframework.context.annotation.Description;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.function.Function;
 
 @Log4j2
 public class MathematicalTool {
 
     @Tool(description = "Takes a IntegerValuesQuery record and " +
             "performs operation (first 'operator' second).")
-    public Function<IntegerValuesQuery, String> operateOnIntegers() {
-        return (IntegerValuesQuery query) -> {
-            log.info("operateOnIntegers called with query: " + query);
-            if (query.operation.equals("+")) {
-                return (query.first + query.second) + "";
-            } else if (query.operation.equals("-")) {
-                return (query.first - query.second) + "";
-            } else if (query.operation.equals("*")) {
-                return (query.first * query.second + "");
-            } else if (query.operation.equals("/")) {
-                return (query.first / query.second) + "";
-            } else if (query.operation.equals("compare")) {
-                return (query.first.compareTo(query.second)) + "";
-            } else {
-                return "Error: unknown operation " + query.operation;
-            }
-        };
+    public String operateOnIntegers(IntegerValuesQuery query) {
+        log.info("operateOnIntegers called with query: " + query);
+        if (query.operation.equals("+")) {
+            return (query.first + query.second) + "";
+        } else if (query.operation.equals("-")) {
+            return (query.first - query.second) + "";
+        } else if (query.operation.equals("*")) {
+            return (query.first * query.second + "");
+        } else if (query.operation.equals("/")) {
+            return (query.first / query.second) + "";
+        } else if (query.operation.equals("compare")) {
+            return (query.first.compareTo(query.second)) + "";
+        } else {
+            return "Error: unknown operation " + query.operation;
+        }
     }
 
     @Tool(description = "Takes a LongValuesQuery record and " +
             "performs operation (first 'operator' second).")
-    public Function<LongValuesQuery, String> operateOnLongs() {
-        return (LongValuesQuery query) -> {
-            log.info("operateOnLongs called with query: " + query);
-            if (query.operation.equals("+")) {
-                return (query.first + query.second) + "";
-            } else if (query.operation.equals("-")) {
-                return (query.first - query.second) + "";
-            } else if (query.operation.equals("*")) {
-                return (query.first * query.second + "");
-            } else if (query.operation.equals("/")) {
-                return (query.first / query.second) + "";
-            } else if (query.operation.equals("compare")) {
-                return (query.first.compareTo(query.second)) + "";
-            } else {
-                return "Error: unknown operation " + query.operation;
-            }
-        };
+    public String operateOnLongs(LongValuesQuery query) {
+        log.info("operateOnLongs called with query: " + query);
+        if (query.operation.equals("+")) {
+            return (query.first + query.second) + "";
+        } else if (query.operation.equals("-")) {
+            return (query.first - query.second) + "";
+        } else if (query.operation.equals("*")) {
+            return (query.first * query.second + "");
+        } else if (query.operation.equals("/")) {
+            return (query.first / query.second) + "";
+        } else if (query.operation.equals("compare")) {
+            return (query.first.compareTo(query.second)) + "";
+        } else {
+            return "Error: unknown operation " + query.operation;
+        }
     }
 
     @Tool(description = "Takes a BigDecimalValuesQuery record and " +
             "performs operation (first 'operator' second).")
-    public Function<BigDecimalValuesQuery, String> operateOnBigDecimals() {
-        return (BigDecimalValuesQuery query) -> {
-            log.info("operateOnBigDecimals called with query: " + query);
-            if (query.operation.equals("+")) {
-                return query.first.add(query.second).toString();
-            } else if (query.operation.equals("-")) {
-                return query.first.add(query.second.negate()).toString();
-            } else if (query.operation.equals("*")) {
-                return query.first.multiply(query.second).toString();
-            } else if (query.operation.equals("/")) {
-                return query.first.divide(query.second, RoundingMode.UNNECESSARY).toString();
-            } else if (query.operation.equals("compare")) {
-                return (query.first.compareTo(query.second)) + "";
-            } else {
-                return "Error: unknown operation " + query.operation;
-            }
-        };
+    public String operateOnBigDecimals(BigDecimalValuesQuery query) {
+        log.info("operateOnBigDecimals called with query: " + query);
+        if (query.operation.equals("+")) {
+            return query.first.add(query.second).toString();
+        } else if (query.operation.equals("-")) {
+            return query.first.add(query.second.negate()).toString();
+        } else if (query.operation.equals("*")) {
+            return query.first.multiply(query.second).toString();
+        } else if (query.operation.equals("/")) {
+            return query.first.divide(query.second, RoundingMode.UNNECESSARY).toString();
+        } else if (query.operation.equals("compare")) {
+            return (query.first.compareTo(query.second)) + "";
+        } else {
+            return "Error: unknown operation " + query.operation;
+        }
     }
 
     /**
