@@ -13,8 +13,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -29,6 +27,8 @@ public class GdpPerCapitaRepositoryTest {
 
     private static final List<String> COUNTRY_CODES = Arrays.asList("USA", "CAN", "MEX", "GBR", "FRA");
     private static final List<Integer> YEARS = Arrays.asList(2020, 2021, 2022, 2023, 2024);
+    private static final String TEST_COUNTRY_CODE = "USA";
+    private static final Integer TEST_YEAR = 2020;
     @Autowired
     private GdpPerCapitaRepository gdpPerCapitaRepository;
     @Autowired
@@ -43,7 +43,6 @@ public class GdpPerCapitaRepositoryTest {
      * Inserts 5 countries * 5 years = 25 records into both GDP table.
      */
     @BeforeEach
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
     void setupData() {
         setupCountries(COUNTRY_CODES);
         BigDecimal gdpCounter = new BigDecimal(10000000000L); // Start with a large base number for GDP
@@ -68,6 +67,10 @@ public class GdpPerCapitaRepositoryTest {
                 popCounter += 1000000L;
             }
         }
+
+        assertThat(countryRepository.count()).isEqualTo(COUNTRY_CODES.size());
+        assertThat(gdpRepository.count()).isEqualTo(COUNTRY_CODES.size() * YEARS.size());
+        assertThat(populationRepository.count()).isEqualTo(COUNTRY_CODES.size() * YEARS.size());
     }
 
     private void setupCountries(List<String> countryCodes) {
@@ -93,23 +96,19 @@ public class GdpPerCapitaRepositoryTest {
         List<GdpPerCapita> all = gdpPerCapitaRepository.findAll();
         assertThat(all).isNotEmpty().hasSize(25);
 
-        String countryCode = "USA";
-        List<GdpPerCapita> results = gdpPerCapitaRepository.findByIdCountryCodeOrderByIdDataYear(countryCode);
+        List<GdpPerCapita> results = gdpPerCapitaRepository.findByIdCountryCodeOrderByIdDataYear(TEST_COUNTRY_CODE);
 
-        // 1. Assert size: We expect 5 years of data for the USA
         assertEquals(5, results.size(), "Should return 5 records for the USA.");
 
-        // 2. Assert calculated value precision (USA, 2024)
-        // Data from data.sql (USA 2024): GDP=27,500,000,000,000, POPULATION=336,000,000
-        // Expected result: 27500000000000 / 336000000 ≈ 81845.2380952381
-        GdpPerCapita usa2024 = results.stream()
-                .filter(gpc -> gpc.getId().getDataYear() == 2024)
+        GdpPerCapita usa2020 = results.stream()
+                .filter(gpc -> gpc.getId().getDataYear() == TEST_YEAR)
                 .findFirst()
-                .orElseThrow(() -> new AssertionError("USA 2024 data not found."));
+                .orElseThrow(() -> new AssertionError("USA 2022 data not found."));
 
-        assertEquals("USA", usa2024.getId().getCountryCode());
-        assertEquals(2024, usa2024.getId().getDataYear());
-        assertEquals(new BigDecimal("81845.2380952381"), usa2024.getGdpPerCapita());
+        assertEquals(TEST_COUNTRY_CODE, usa2020.getId().getCountryCode());
+        assertEquals(TEST_YEAR, usa2020.getId().getDataYear());
+
+        assertEquals(0, new BigDecimal("100.0").compareTo(usa2020.getGdpPerCapita()));
     }
 
     /**
