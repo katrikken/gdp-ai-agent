@@ -1,12 +1,11 @@
-package com.katrikken.gdpai.tools;
+package com.katrikken.gdpai.tool;
 
 import com.katrikken.gdpai.entity.CountryYearId;
 import com.katrikken.gdpai.entity.Gdp;
 import com.katrikken.gdpai.repository.GdpRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Description;
+import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
@@ -21,39 +20,25 @@ public class GdpToolService extends DataTool {
 
     private final GdpRepository repository;
 
-    // --- Input Records for Function Parameters ---
-
-    /**
-     * AI Tool: Retrieves all the Gross Domestic Product (GDP) values.
-     *
-     * @return a Function
-     */
-    @Bean
-    @Description("Returns all known GDP data (List).")
+    @Tool(description = "Returns all known GDP data (List).")
     public Function<Void, List<Gdp>> getAllGdpTool() {
+        log.info("getAllGdpTool called");
         return (Void) -> repository.findAll();
     }
 
-    /**
-     * AI Tool: Inserts Gross Domestic Product (GDP) values.
-     *
-     * @return a Function
-     */
-    @Bean
-    @Description("Inserts GDP data (Gdp).")
+    @Tool(description = "Inserts GDP data (Gdp).")
     public Function<Gdp, Gdp> insertGdpTool() {
-        return repository::save;
+        return (Gdp gdp) -> {
+            log.info("insertGdpTool called with GDP {}", gdp);
+            return repository.save(gdp);
+        };
+
     }
 
-    /**
-     * AI Tool: Retrieves the Gross Domestic Product (GDP) value for a specific country and year.
-     *
-     * @return a Function
-     */
-    @Description("Takes a CountryCodeYearQuery (countryCode, year) and returns GDP data (String).")
-    @Bean
+    @Tool(description = "Takes a CountryCodeYearQuery (countryCode, year) and returns GDP data (String).")
     public Function<CountryCodeYearQuery, String> gdpByCountryCodeYearTool() {
         return (CountryCodeYearQuery query) -> {
+            log.info("gdpByCountryCodeYearTool called with CountryCodeYearQuery {}", query);
             try {
                 Optional<Gdp> gdp = repository.findById(new CountryYearId(query.countryCode(), query.year()));
                 if (gdp.isPresent()) {
@@ -70,15 +55,10 @@ public class GdpToolService extends DataTool {
         };
     }
 
-    /**
-     * AI Tool: Retrieves all data on the Gross Domestic Product (GDP) for a specific country.
-     *
-     * @return a Function
-     */
-    @Description("Takes a CountryCodeQuery (countryCode) and returns GDP data list sorted by year (List).")
-    @Bean
+    @Tool(description = "Takes a CountryCodeQuery (countryCode) and returns GDP data list sorted by year (List).")
     public Function<CountryCodeQuery, List> gdpByCountryCodeTool() {
         return (CountryCodeQuery countryCode) -> {
+            log.info("gdpByCountryCodeTool called with CountryCodeQuery {}", countryCode);
             try {
                 return repository.findByIdCountryCodeOrderByIdDataYear(countryCode.countryCode());
             } catch (Exception e) {
@@ -88,15 +68,10 @@ public class GdpToolService extends DataTool {
         };
     }
 
-    /**
-     * AI Tool: Retrieves all data on the Gross Domestic Product (GDP) for a specific year.
-     *
-     * @return a Function
-     */
-    @Description("Takes a YearQuery (year) and returns GDP data list sorted by Country Code (List).")
-    @Bean
+    @Tool(description = "Takes a YearQuery (year) and returns GDP data list sorted by Country Code (List).")
     public Function<YearQuery, List> gdpByYearTool() {
         return (YearQuery year) -> {
+            log.info("gdpByYearTool called with YearQuery {}", year);
             try {
                 return repository.findByIdDataYearOrderByIdCountryCode(year.year());
             } catch (Exception e) {
@@ -106,27 +81,18 @@ public class GdpToolService extends DataTool {
         };
     }
 
-    /**
-     * AI Tool: Retrieves all data on the Gross Domestic Product (GDP) for a specific year period.
-     *
-     * @return a Function
-     */
-    @Description("Takes a YearRangeQuery (startYear, endYear) and returns GDP data list sorted by Country Code (List).")
-    @Bean
+    @Tool(description = "Takes a YearRangeQuery (startYear, endYear) and returns GDP data list sorted by Country Code (List).")
     public Function<YearRangeQuery, List<Gdp>> gdpBetweenYearTool() {
-        return (YearRangeQuery interval) -> repository
-                .findByIdDataYearBetweenOrderByIdCountryCode(interval.startYear(), interval.endYear());
+        return (YearRangeQuery interval) -> {
+            log.info("gdpBetweenYearTool called with YearRangeQuery {}", interval);
+            return repository
+                    .findByIdDataYearBetweenOrderByIdCountryCode(interval.startYear(), interval.endYear());
+        };
     }
 
-    /**
-     * AI Tool: Sorts data on Gross Domestic Product (GDP) by value from lowest to highest.
-     *
-     * @return a Function
-     */
-    @Description("Takes a list of Gdp class (List) and returns the list sorted by GDP value (List).")
-    @Bean
+    @Tool(description = "Takes a list of Gdp class (List) and returns the list sorted by GDP value (List).")
     public Function<List<Gdp>, List<Gdp>> gdpSortByGdpValueTool() {
+        log.info("gdpSortByGdpValueTool called");
         return (List<Gdp> gdp) -> gdp.stream().sorted(Comparator.comparing(Gdp::getGdp)).toList();
     }
-
 }

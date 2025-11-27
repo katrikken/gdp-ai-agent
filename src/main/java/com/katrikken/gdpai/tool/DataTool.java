@@ -1,8 +1,20 @@
-package com.katrikken.gdpai.tools;
+package com.katrikken.gdpai.tool;
 
+import lombok.extern.log4j.Log4j2;
+import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.context.annotation.Description;
+import org.springframework.context.i18n.LocaleContextHolder;
 
+import java.time.LocalDateTime;
+
+@Log4j2
 public class DataTool {
+
+    @Tool(description = "Get the current year in the user's timezone")
+    public String getCurrentYearTool() {
+        log.info("getCurrentYearTool called");
+        return String.valueOf(LocalDateTime.now().atZone(LocaleContextHolder.getTimeZone().toZoneId()).getYear());
+    }
 
     /**
      * Input structure for querying by country code.

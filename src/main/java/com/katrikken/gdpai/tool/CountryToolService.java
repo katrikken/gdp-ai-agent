@@ -1,11 +1,10 @@
-package com.katrikken.gdpai.tools;
+package com.katrikken.gdpai.tool;
 
 import com.katrikken.gdpai.entity.Country;
 import com.katrikken.gdpai.repository.CountryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Description;
+import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,18 +22,22 @@ public class CountryToolService {
      *
      * @return a Function
      */
-    @Description("Takes a country name (String) and returns corresponding country code (String)")
-    @Bean
+    @Tool(description = "Takes a country name (String) and returns corresponding country code (String)")
     public Function<String, String> countryNameToCountryCodeTool() {
         return (String name) -> {
+            log.info("CountryNameToCountryCodeTool start with name {} ", name);
+            String response;
             List<Country> countries = repository.findByNameContaining(name);
             if (countries.isEmpty()) {
-                return String.format("Error: could not find Country code for provided Country name %s", name);
+
+                response = String.format("Error: could not find Country code for provided Country name %s", name);
             } else if (countries.size() != 1) {
-                return String.format("Error: several countries match provided country name %s", name);
+                response = String.format("Error: several countries match provided country name %s", name);
             }
 
-            return countries.getFirst().getCountryCode();
+            response = countries.getFirst().getCountryCode();
+            log.info("CountryNameToCountryCodeTool end with name {} and response {}", name, response);
+            return response;
         };
     }
 }
