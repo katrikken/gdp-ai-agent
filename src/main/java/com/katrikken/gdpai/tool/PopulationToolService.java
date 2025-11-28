@@ -10,7 +10,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -66,6 +68,22 @@ public class PopulationToolService extends DataTool {
         log.info("populationsSortByPopulationValueTool called");
         return populations.stream()
                 .sorted(Comparator.comparing(Population::getPopulation)).toList();
+    }
+
+    @Tool(description = "Takes a list of Population class (List) and returns the map of Country codes to the list of Population values (List).")
+    public Map<String, List<Population>> mapPopulationsByCountryTool(List<Population> populations) {
+        log.info("mapPopulationsByCountryTool called");
+        return populations.stream().collect(Collectors.groupingBy(
+                p -> p.getId().getCountryCode(), Collectors.toList()
+        ));
+    }
+
+    @Tool(description = "Takes a list of Population class (List) and returns the map of Years to the list of Population values (List).")
+    public Map<Integer, List<Population>> mapPopulationsByYearTool(List<Population> populations) {
+        log.info("mapPopulationsByYearTool called");
+        return populations.stream().collect(Collectors.groupingBy(
+                p -> p.getId().getDataYear(), Collectors.toList()
+        ));
     }
 
     @Tool(description = "Takes a YearRangeQuery (startYear, endYear) and returns Population data list sorted by Country Code (List).")

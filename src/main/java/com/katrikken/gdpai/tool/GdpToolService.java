@@ -10,7 +10,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -77,5 +79,21 @@ public class GdpToolService extends DataTool {
     public List<Gdp> gdpSortByGdpValueTool(List<Gdp> gdp) {
         log.info("gdpSortByGdpValueTool called");
         return gdp.stream().sorted(Comparator.comparing(Gdp::getGdp)).toList();
+    }
+
+    @Tool(description = "Takes a list of GDP class (List) and returns the map of Country codes to the list of GDP values (List).")
+    public Map<String, List<Gdp>> mapGdpByCountryTool(List<Gdp> GDPs) {
+        log.info("mapGDPsByCountryTool called");
+        return GDPs.stream().collect(Collectors.groupingBy(
+                p -> p.getId().getCountryCode(), Collectors.toList()
+        ));
+    }
+
+    @Tool(description = "Takes a list of GDP class (List) and returns the map of Years to the list of GDP values (List).")
+    public Map<Integer, List<Gdp>> mapGDPsByYearTool(List<Gdp> GDPs) {
+        log.info("mapGDPsByYearTool called");
+        return GDPs.stream().collect(Collectors.groupingBy(
+                p -> p.getId().getDataYear(), Collectors.toList()
+        ));
     }
 }

@@ -16,11 +16,19 @@ public class DataTool {
         return String.valueOf(LocalDateTime.now().atZone(LocaleContextHolder.getTimeZone().toZoneId()).getYear());
     }
 
+    @Tool(description = "Log thought process tool")
+    public void logTool(String thoughts) {
+        log.info("logTool called");
+        log.info("AI thoughts: {}", thoughts);
+    }
+
+
     /**
      * Input structure for querying by country code.
      */
     public record CountryCodeQuery(
-            @Description("The 3-letter uppercase country code (e.g., USA, CAN, FRA).")
+            @Description("The 3-letter uppercase country code (e.g., USA, CAN, FRA). " +
+                    "Must be strictly 3 letters, use countryNameToCountryCodeTool tool to get it from country name")
             String countryCode) {
     }
 
@@ -47,7 +55,8 @@ public class DataTool {
      * Record defining the required input for the GDP and Population tool (Country Code and Year).
      */
     public record CountryCodeYearQuery(
-            @Description("The 3-letter uppercase country code (e.g., USA, CAN, FRA).")
+            @Description("The 3-letter uppercase country code (e.g., USA, CAN, FRA). " +
+                    "Must be strictly 3 letters, use countryNameToCountryCodeTool tool to get it from country name")
             String countryCode,
             @Description("The specific year of the data (e.g., 2023). Must be a four-digit number.")
             int year) {

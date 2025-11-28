@@ -3,14 +3,25 @@ server:
 
 spring:
   config:
-    import: system-prompt.yml
+    import: system-prompt.yml, secrets.yml
   ai:
-    vertex:
-      ai:
-        gemini:
-          project-id: <YOUR-GOOGLE-CLOUD-PROJECT-ID>
-          location: "europe-west1"
-          model: "gemini-2.0-flash-lite"
+  #  vertex:
+  #    ai:
+  #      gemini:
+  #        project-id: <YOUR-GOOGLE-CLOUD-PROJECT-ID>
+  #        location: "europe-west1"
+  #        model: "gemini-2.0-flash-lite"
+
+
+    retry:
+      backoff:
+        initial-interval: 22s
+        multiplier: 2
+    openai:
+     # api-key: ${OPENAI_API_KEY}
+      chat:
+        options:
+          model: "gpt-4o-mini"
 
 
   datasource:
@@ -34,7 +45,7 @@ spring:
       ddl-auto: none
     # Set the dialect specifically for H2
     database-platform: org.hibernate.dialect.H2Dialect
-    show-sql: true
+    show-sql: false
 
   # Database Initialization (runs the SQL scripts)
   sql:

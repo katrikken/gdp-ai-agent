@@ -8,6 +8,8 @@ import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -32,5 +34,21 @@ public class GdpPerCapitaToolService extends DataTool {
     public List<GdpPerCapita> gdpPerCapitaByYearRange(YearRangeQuery query) {
         log.info("gdpPerCapitaByYearRange called with query {}", query);
         return repository.findByIdDataYearBetweenOrderByIdCountryCode(query.startYear(), query.endYear());
+    }
+
+    @Tool(description = "Takes a list of GdpPerCapita (List) and returns the map of Country codes to the list of GdpPerCapita values (List).")
+    public Map<String, List<GdpPerCapita>> mapGdpPerCapitaByCountryTool(List<GdpPerCapita> GDPs) {
+        log.info("mapGdpPerCapitaByCountryTool called");
+        return GDPs.stream().collect(Collectors.groupingBy(
+                p -> p.getId().getCountryCode(), Collectors.toList()
+        ));
+    }
+
+    @Tool(description = "Takes a list of GdpPerCapita (List) and returns the map of Years to the list of GdpPerCapita values (List).")
+    public Map<Integer, List<GdpPerCapita>> mapGdpPerCapitaByYearTool(List<GdpPerCapita> GDPs) {
+        log.info("mapGdpPerCapitaByYearTool called");
+        return GDPs.stream().collect(Collectors.groupingBy(
+                p -> p.getId().getDataYear(), Collectors.toList()
+        ));
     }
 }

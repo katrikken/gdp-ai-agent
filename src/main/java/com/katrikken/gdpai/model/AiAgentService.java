@@ -40,15 +40,20 @@ public class AiAgentService {
 
     public String chat(String prompt) {
         log.info("System message for AI: {}", SYSTEM_MESSAGE);
-        return chatClient.prompt()
-                .messages(new SystemMessage(SYSTEM_MESSAGE))
-                .user(userMessage -> userMessage.text(prompt))
-                .tools(new MathematicalTool(),
-                        countryToolService,
-                        gdpToolService,
-                        populationToolService,
-                        gdpPerCapitaToolService)
-                .call()
-                .content();
+        try {
+            return chatClient.prompt()
+                    .messages(new SystemMessage(SYSTEM_MESSAGE))
+                    .user(userMessage -> userMessage.text(prompt))
+                    .tools(new MathematicalTool(),
+                            countryToolService,
+                            gdpToolService,
+                            populationToolService,
+                            gdpPerCapitaToolService)
+                    .call()
+                    .content();
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return "Could not process prompt, got the following error: " + e.getMessage();
+        }
     }
 }
