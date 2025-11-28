@@ -27,13 +27,12 @@ public class CountryToolService {
         String response;
         List<Country> countries = repository.findByNameContaining(name);
         if (countries.isEmpty()) {
-
             response = String.format("Error: could not find Country code for provided Country name %s", name);
         } else if (countries.size() != 1) {
             response = String.format("Error: several countries match provided country name %s", name);
+        } else {
+            response = countries.getFirst().getCountryCode();
         }
-
-        response = countries.getFirst().getCountryCode();
         log.info("CountryNameToCountryCodeTool end with name {} and response {}", name, response);
         return response;
     }
