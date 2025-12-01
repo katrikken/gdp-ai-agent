@@ -35,4 +35,14 @@ public interface GdpPerCapitaRepository extends JpaRepository<GdpPerCapita, Coun
      */
     List<GdpPerCapita> findByIdDataYearBetweenOrderByIdCountryCode(int startYear, int endYear);
 
+    /**
+     * Retrieves all GDP per capita records within a specified year range (inclusive) for a country.
+     *
+     * @param countryCode The 3-letter country code (e.g., "USA").
+     * @param startYear   The starting year of the range.
+     * @param endYear     The ending year of the range.
+     * @return A list of GdpPerCapita records within the year range.
+     */
+    List<GdpPerCapita> findByIdCountryCodeAndIdDataYearBetweenOrderByIdDataYear(String countryCode, int startYear, int endYear);
+
 }

@@ -50,6 +50,19 @@ public class DataTool {
             int endYear) {
     }
 
+    /**
+     * Input structure for querying by a range of years and country code.
+     */
+    public record CountryCodeYearRangeQuery(
+            @Description("The 3-letter uppercase country code (e.g., USA, CAN, FRA). " +
+                    "Must be strictly 3 letters, use countryNameToCountryCodeTool tool to get it from country name")
+            String countryCode,
+            @Description("The inclusive starting year of the range (e.g., 2021).")
+            int startYear,
+            @Description("The inclusive ending year of the range (e.g., 2023).")
+            int endYear) {
+    }
+
 
     /**
      * Record defining the required input for the GDP and Population tool (Country Code and Year).

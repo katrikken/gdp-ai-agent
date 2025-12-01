@@ -143,6 +143,17 @@ public class GdpPerCapitaRepositoryTest {
         assertEquals(15, results.size(), "Should return 15 records (5 countries * 3 years).");
     }
 
+
+    @Test
+    void testFindByCountryIdYearBetween_Success() {
+        int startYear = 2021;
+        int endYear = 2023;
+        List<GdpPerCapita> results = gdpPerCapitaRepository.findByIdCountryCodeAndIdDataYearBetweenOrderByIdDataYear(
+                TEST_COUNTRY_CODE, startYear, endYear);
+
+        assertEquals(3, results.size(), "Should return 3 records");
+    }
+
     /**
      * Tests retrieval when no data exists for the requested query.
      */

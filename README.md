@@ -68,7 +68,7 @@ mvn clean install
 2) Configuration: OpenAI API Key
 
 Since the agent relies on the OpenAI model for natural language processing, you must provide your API key.
-Before running the application, open your *src/main/resources/application.yml* file and add the following configuration, replacing the placeholder with your actual key:
+Before running the application, create file *src/main/resources/secrets.yml* file and add the following configuration, replacing the placeholder with your actual key:
 
 ```
 spring.ai.openai.api-key: {your api key}

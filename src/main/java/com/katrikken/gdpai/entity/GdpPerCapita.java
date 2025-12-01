@@ -25,6 +25,9 @@ public class GdpPerCapita {
     @EmbeddedId
     private CountryYearId id;
 
+    @Column(name = "COUNTRY_NAME")
+    private String name;
+
     @Column(name = "GDP_PER_CAPITA", nullable = false)
     private BigDecimal gdpPerCapita;
 }
