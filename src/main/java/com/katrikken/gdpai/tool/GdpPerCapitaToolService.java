@@ -17,31 +17,36 @@ import java.util.stream.Collectors;
 @Log4j2
 public class GdpPerCapitaToolService extends DataTool {
 
+    public static final String gdpPerCapitaByCountry_DESCRIPTION = "A Java Function that takes a CountryCodeQuery record and returns a map of Year to GdpPerCapita value for a specific country since 1960.";
+    public static final String gdpPerCapitaByYear_DESCRIPTION = "Takes a YearQuery record and returns a map of Country name to GdpPerCapita value for a specific year.";
+    public static final String gdpPerCapitaByCountryAndYearRange_DESCRIPTION = "Takes a CountryCodeYearRangeQuery record and returns map of Year to the GDP per capita value for a given country " +
+            "within a given start year and end year range (inclusive).";
+    public static final String gdpPerCapitaByYearRange_DESCRIPTION = "Takes a YearRangeQuery record and returns the GDP per capita values " +
+            "for all countries within a given start year and end year range (inclusive).";
     private final GdpPerCapitaRepository repository;
 
-    @Tool(description = "A Java Function that takes a CountryCodeQuery record and returns a map of Year to GdpPerCapita value for a specific country.")
+    @Tool(description = gdpPerCapitaByCountry_DESCRIPTION)
     public Map<Integer, BigDecimal> gdpPerCapitaByCountry(CountryCodeQuery query) {
         log.info("gdpPerCapitaByCountry called with query {}", query);
         return repository.findByIdCountryCodeOrderByIdDataYear(query.countryCode()).stream()
                 .collect(Collectors.toMap(v -> v.getId().getDataYear(), GdpPerCapita::getGdpPerCapita));
     }
 
-    @Tool(description = "Takes a YearQuery record and returns a map of Country name to GdpPerCapita value for a specific year.")
+    @Tool(description = gdpPerCapitaByYear_DESCRIPTION)
     public Map<String, BigDecimal> gdpPerCapitaByYear(YearQuery query) {
         log.info("gdpPerCapitaByYear called with query {}", query);
         return repository.findByIdDataYearOrderByIdCountryCode(query.year()).stream()
                 .collect(Collectors.toMap(GdpPerCapita::getName, GdpPerCapita::getGdpPerCapita));
     }
 
-    @Tool(description = "Takes a CountryCodeYearRangeQuery record and returns map of Year to the GDP per capita value for a given country " +
-            "within a given start year and end year range (inclusive).")
+    @Tool(description = gdpPerCapitaByCountryAndYearRange_DESCRIPTION)
     public Map<Integer, BigDecimal> gdpPerCapitaByCountryAndYearRange(CountryCodeYearRangeQuery query) {
         log.info("gdpPerCapitaByCountryAndYearRange called with query {}", query);
         return repository.findByIdDataYearBetweenOrderByIdCountryCode(query.startYear(), query.endYear()).stream()
                 .collect(Collectors.toMap(v -> v.getId().getDataYear(), GdpPerCapita::getGdpPerCapita));
     }
 
-    @Tool(description = "Takes a YearRangeQuery record and returns the GDP per capita values for all countries within a given start year and end year range (inclusive).")
+    @Tool(description = gdpPerCapitaByYearRange_DESCRIPTION)
     public List<GdpPerCapita> gdpPerCapitaByYearRange(YearRangeQuery query) {
         log.info("gdpPerCapitaByYearRange called with query {}", query);
         return repository.findByIdDataYearBetweenOrderByIdCountryCode(query.startYear(), query.endYear());

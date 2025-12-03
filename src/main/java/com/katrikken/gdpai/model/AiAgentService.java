@@ -3,7 +3,6 @@ package com.katrikken.gdpai.model;
 import com.katrikken.gdpai.tool.CountryToolService;
 import com.katrikken.gdpai.tool.GdpPerCapitaToolService;
 import com.katrikken.gdpai.tool.GdpToolService;
-import com.katrikken.gdpai.tool.MathematicalTool;
 import com.katrikken.gdpai.tool.PopulationToolService;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.ai.chat.client.ChatClient;
@@ -44,11 +43,13 @@ public class AiAgentService {
             return chatClient.prompt()
                     .messages(new SystemMessage(SYSTEM_MESSAGE))
                     .user(userMessage -> userMessage.text(prompt))
-                    .tools(new MathematicalTool(),
-                            countryToolService,
-                            gdpToolService,
-                            populationToolService,
-                            gdpPerCapitaToolService)
+//                    .tools(new MathematicalTool(),
+//                            countryToolService,
+//                            gdpToolService,
+//                            populationToolService,
+//                            gdpPerCapitaToolService)
+                    .toolNames("gdpPerCapitaByCountry", "gdpPerCapitaByYear",
+                            "gdpPerCapitaByCountryAndYearRange", "gdpPerCapitaByYearRange")
                     .call()
                     .content();
         } catch (Exception e) {

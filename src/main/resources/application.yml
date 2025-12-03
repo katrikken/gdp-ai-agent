@@ -13,16 +13,19 @@ spring:
   #        model: "gemini-2.0-flash-lite"
 
 
-    retry:
-      backoff:
-        initial-interval: 22s
-        multiplier: 2
-    openai:
-     # api-key: ${OPENAI_API_KEY}
+  #  retry:
+  #    backoff:
+  #      initial-interval: 22s
+  #      multiplier: 2
+  #  openai:
+  #    chat:
+  #      options:
+  #        model: "gpt-4o-mini"
+    ollama:
+      base-url: http://localhost:11434
       chat:
         options:
-          model: "gpt-4o-mini"
-
+          model: mistral
 
   datasource:
     # Use an in-memory H2 database named 'testdb'
