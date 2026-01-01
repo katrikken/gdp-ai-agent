@@ -73,6 +73,15 @@ Before running the application, create file *src/main/resources/secrets.yml* fil
 ```
 spring.ai.openai.api-key: {your api key}
 ```
+3) Configuration for Ollama
+
+- Install Ollama following official instructions from https://docs.ollama.com/quickstart
+- run the Mistral model or the model of choice that supports tools and is set in the application.yml
+
+```
+ollama run mistral
+```
+
 
 ### 🛠️ Running the Application
 

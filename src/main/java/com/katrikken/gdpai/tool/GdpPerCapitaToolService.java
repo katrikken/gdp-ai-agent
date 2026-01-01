@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 @Log4j2
 public class GdpPerCapitaToolService extends DataTool {
 
-    public static final String gdpPerCapitaByCountry_DESCRIPTION = "A Java Function that takes a CountryCodeQuery record and returns a map of Year to GdpPerCapita value for a specific country since 1960.";
+    public static final String gdpPerCapitaByCountry_DESCRIPTION = "A Function that takes a CountryCodeQuery record and returns a map of Year to GdpPerCapita value for a specific country since 1960.";
     public static final String gdpPerCapitaByYear_DESCRIPTION = "Takes a YearQuery record and returns a map of Country name to GdpPerCapita value for a specific year.";
     public static final String gdpPerCapitaByCountryAndYearRange_DESCRIPTION = "Takes a CountryCodeYearRangeQuery record and returns map of Year to the GDP per capita value for a given country " +
             "within a given start year and end year range (inclusive).";
@@ -42,7 +42,8 @@ public class GdpPerCapitaToolService extends DataTool {
     @Tool(description = gdpPerCapitaByCountryAndYearRange_DESCRIPTION)
     public Map<Integer, BigDecimal> gdpPerCapitaByCountryAndYearRange(CountryCodeYearRangeQuery query) {
         log.info("gdpPerCapitaByCountryAndYearRange called with query {}", query);
-        return repository.findByIdDataYearBetweenOrderByIdCountryCode(query.startYear(), query.endYear()).stream()
+        return repository.findByIdCountryCodeAndIdDataYearBetweenOrderByIdDataYear(
+                        query.countryCode(), query.startYear(), query.endYear()).stream()
                 .collect(Collectors.toMap(v -> v.getId().getDataYear(), GdpPerCapita::getGdpPerCapita));
     }
 

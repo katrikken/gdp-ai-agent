@@ -17,10 +17,10 @@ spring:
   #    backoff:
   #      initial-interval: 22s
   #      multiplier: 2
-  #  openai:
-  #    chat:
-  #      options:
-  #        model: "gpt-4o-mini"
+    openai:
+      chat:
+        options:
+          model: "gpt-4.1-nano"
     ollama:
       base-url: http://localhost:11434
       chat:

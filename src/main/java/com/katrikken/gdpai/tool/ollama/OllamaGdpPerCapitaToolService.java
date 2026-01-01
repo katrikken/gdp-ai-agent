@@ -1,6 +1,8 @@
-package com.katrikken.gdpai.tool;
+package com.katrikken.gdpai.tool.ollama;
 
 import com.katrikken.gdpai.entity.GdpPerCapita;
+import com.katrikken.gdpai.tool.DataTool;
+import com.katrikken.gdpai.tool.GdpPerCapitaToolService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Description;
@@ -39,5 +41,4 @@ public class OllamaGdpPerCapitaToolService {
     public Function<DataTool.YearRangeQuery, List<GdpPerCapita>> gdpPerCapitaByYearRange() {
         return (gdpPerCapitaToolService::gdpPerCapitaByYearRange);
     }
-
 }
