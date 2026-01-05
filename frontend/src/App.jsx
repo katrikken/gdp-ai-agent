@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Send, Loader2 } from 'lucide-react';
 
 const API_ENDPOINT = 'http://localhost:8080/chat';
+const SESSION_START_ENDPOINT = 'http://localhost:8080/session/start';
 
 const Message = ({ text, isUser, isThinking }) => (
   <div className={`flex w-full ${isUser ? 'justify-end' : 'justify-start'}`}>
@@ -39,6 +40,16 @@ const App = () => {
 
   useEffect(scrollToBottom, [messages]);
 
+  // Start session on mount so the server creates a session and sets JSESSIONID
+  useEffect(() => {
+    fetch(SESSION_START_ENDPOINT, {
+      method: 'GET',
+      credentials: 'include' // important: ensure cookie is set in browser
+    }).catch(err => {
+      console.warn('Session start failed', err);
+    });
+  }, []);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!input.trim() || isLoading) return;
@@ -52,25 +63,23 @@ const App = () => {
     const thinkingMessageId = Date.now() + 1;
     setMessages(prev => [...prev, { id: thinkingMessageId, text: '', isUser: false, isThinking: true }]);
 
-    // --- API Integration (Placeholder/Conceptual) ---
     try {
-      // NOTE: Replace this with your actual fetch logic to your Spring Boot API
       const response = await fetch(API_ENDPOINT, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: input.trim(), model: model }), // Send prompt as JSON payload
+        credentials: 'include', // ensure JSESSIONID is sent so session-scoped beans are used
+        body: JSON.stringify({ prompt: input.trim(), model: model }),
       });
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      // Simulating a slow API response with a delay (remove in production)
+      // Simulated delay (remove in production)
       await new Promise(resolve => setTimeout(resolve, 1500));
 
       const aiResponseText = await response.text();
 
-      // Update the thinking message with the real response
       setMessages(prev => prev.map(msg =>
         msg.id === thinkingMessageId
         ? { ...msg, text: aiResponseText || "Sorry, I encountered an error while processing your request.", isThinking: false }
@@ -79,7 +88,6 @@ const App = () => {
 
     } catch (error) {
       console.error("Error communicating with AI Agent API:", error);
-      // Replace the thinking message with an error message
       setMessages(prev => prev.map(msg =>
         msg.id === thinkingMessageId
         ? { ...msg, text: `Error: Could not connect to agent at ${API_ENDPOINT}`, isThinking: false }
@@ -88,7 +96,6 @@ const App = () => {
     } finally {
       setIsLoading(false);
     }
-    // -------------------------------------------------
   };
 
   return (
@@ -101,7 +108,6 @@ const App = () => {
                 <span className="bg-blue-600 w-3 h-3 rounded-full mr-2 animate-pulse"></span>
                 GDP-AI Data Agent
             </h1>
-
 
             {/* Model selector */}
             <div className="flex items-center space-x-2">

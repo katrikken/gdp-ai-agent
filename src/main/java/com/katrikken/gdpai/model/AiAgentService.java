@@ -23,6 +23,7 @@ public class AiAgentService {
                           OllamaChatModel ollamaChatModel,
                           ChatMemory chatMemory,
                           ChainWorkflow chainWorkflow) {
+        log.debug("In AiAgentService initialization for session");
         this.openAIChatClient = ChatClient.builder(openAiChatModel)
                 .defaultAdvisors(MessageChatMemoryAdvisor.builder(chatMemory).build())
                 .build();
