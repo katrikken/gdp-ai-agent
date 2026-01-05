@@ -1,6 +1,5 @@
 package com.katrikken.gdpai.tool.ollama;
 
-import com.katrikken.gdpai.entity.GdpPerCapita;
 import com.katrikken.gdpai.tool.DataTool;
 import com.katrikken.gdpai.tool.GdpPerCapitaToolService;
 import lombok.RequiredArgsConstructor;
@@ -8,9 +7,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Description;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
 import java.util.function.Function;
 
 @Service
@@ -19,26 +15,32 @@ public class OllamaGdpPerCapitaToolService {
     private final GdpPerCapitaToolService gdpPerCapitaToolService;
 
     @Bean
-    @Description(GdpPerCapitaToolService.gdpPerCapitaByCountry_DESCRIPTION)
-    public Function<DataTool.CountryCodeQuery, Map<Integer, BigDecimal>> gdpPerCapitaByCountry() {
+    @Description(GdpPerCapitaToolService.GDP_PER_CAPITA_BY_COUNTRY_DESCRIPTION)
+    public Function<DataTool.CountryCodeQuery, String> gdpPerCapitaByCountry() {
         return (gdpPerCapitaToolService::gdpPerCapitaByCountry);
     }
 
     @Bean
-    @Description(GdpPerCapitaToolService.gdpPerCapitaByYear_DESCRIPTION)
-    public Function<DataTool.YearQuery, Map<String, BigDecimal>> gdpPerCapitaByYear() {
+    @Description(GdpPerCapitaToolService.GDP_PER_CAPITA_BY_YEAR_DESCRIPTION)
+    public Function<DataTool.YearQuery, String> gdpPerCapitaByYear() {
         return (gdpPerCapitaToolService::gdpPerCapitaByYear);
     }
 
     @Bean
-    @Description(GdpPerCapitaToolService.gdpPerCapitaByCountryAndYearRange_DESCRIPTION)
-    public Function<DataTool.CountryCodeYearRangeQuery, Map<Integer, BigDecimal>> gdpPerCapitaByCountryAndYearRange() {
+    @Description(GdpPerCapitaToolService.GDP_PER_CAPITA_BY_COUNTRY_AND_RANGE_DESCRIPTION)
+    public Function<DataTool.CountryCodeYearRangeQuery, String> gdpPerCapitaByCountryAndYearRange() {
         return (gdpPerCapitaToolService::gdpPerCapitaByCountryAndYearRange);
     }
 
     @Bean
-    @Description(GdpPerCapitaToolService.gdpPerCapitaByYearRange_DESCRIPTION)
-    public Function<DataTool.YearRangeQuery, List<GdpPerCapita>> gdpPerCapitaByYearRange() {
+    @Description(GdpPerCapitaToolService.GDP_PER_CAPITA_BY_YEAR_RANGE_DESCRIPTION)
+    public Function<DataTool.YearRangeQuery, String> gdpPerCapitaByYearRange() {
         return (gdpPerCapitaToolService::gdpPerCapitaByYearRange);
+    }
+
+    @Bean
+    @Description(GdpPerCapitaToolService.GDP_PER_CAPITA_TREND_DESCRIPTION)
+    public Function<DataTool.CountryCodeQuery, String> gdpPerCapitaTrendForCountryTool() {
+        return (gdpPerCapitaToolService::gdpPerCapitaTrendForCountryTool);
     }
 }
