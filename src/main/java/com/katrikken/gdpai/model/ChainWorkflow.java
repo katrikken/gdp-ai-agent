@@ -41,13 +41,17 @@ public class ChainWorkflow {
 //                            populationToolService,
 //                            gdpPerCapitaToolService)
                 .toolNames("gdpPerCapitaByCountry", "gdpPerCapitaByYear",
-                        "gdpPerCapitaByCountryAndYearRange", "gdpPerCapitaByYearRange", "gdpPerCapitaTrendForCountry",
+                        "gdpPerCapitaByYearRange", "gdpPerCapitaTrendForCountry",
 
                         "populationByCountryYear", "populationByCountry", "populationByYear",
-                        "populationBetweenYears", "populationTrendForCountry",
+                        "populationBetweenYears", "populationTrendForCountry", "insertPopulation",
 
                         "gdpByCountryYear", "gdpByCountry", "gdpByYear",
-                        "gdpBetweenYears", "gdpTrendForCountry"
+                        "gdpBetweenYears", "gdpTrendForCountry", "insertGdp",
+
+                        "countryNameToCountryCode",
+
+                        "getCurrentYear", "operateOnBigDecimals"
                 )
                 .call().content();
 

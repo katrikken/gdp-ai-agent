@@ -106,10 +106,10 @@ You can interact with the running application using the following interfaces:
 
 ### Example API Usage (cURL)
 
-You can test the chat endpoint from your terminal:
+You can test the chat endpoint from your terminal (example for Windows Command Prompt):
 
 ```
-curl -X POST http://localhost:8080/chat -H "Content-Type: text/plain" --data-raw "Which country had the highest GDP in 2023?"
+curl -X POST http://localhost:8080/chat -H "Content-Type: application/json" -d "{\"model\": \"ollama\", \"prompt\": \"What was the GDP per capita of Germany in 2024?\"}"
 ```
 
 

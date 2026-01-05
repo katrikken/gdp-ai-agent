@@ -37,10 +37,8 @@ public class PopulationToolService extends DataTool {
                     "Output: multi-line string with entries formatted as countryCode, year: population.";
 
     public static final String POPULATION_TREND_DESCRIPTION =
-            "Return a readable year-by-year Population trend for a country. Input CountryCodeQuery. " +
-                    "Outputs a multi-line string starting with: \"Population development for the country {country}:\" " +
-                    "followed by lines: \"{year}: {population}\" for the first record and for subsequent years: " +
-                    "\"{year}: {population}, {+/-difference}, {+/-percentage%}\"";
+            "Return Population historical trend for a country. Input CountryCodeQuery. " +
+                    "Outputs a multi-line string starting with Population development for the country including growth percentage.";
 
 
     private final PopulationRepository repository;

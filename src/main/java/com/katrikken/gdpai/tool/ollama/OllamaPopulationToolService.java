@@ -47,7 +47,7 @@ public class OllamaPopulationToolService {
 
     @Bean
     @Description(PopulationToolService.POPULATION_TREND_DESCRIPTION)
-    public Function<DataTool.CountryCodeQuery, String> populationTrendForCountryTool() {
+    public Function<DataTool.CountryCodeQuery, String> populationTrendForCountry() {
         return populationToolService::populationTrendForCountryTool;
     }
 }

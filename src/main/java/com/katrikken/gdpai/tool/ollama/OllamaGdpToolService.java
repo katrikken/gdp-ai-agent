@@ -47,7 +47,7 @@ public class OllamaGdpToolService {
 
     @Bean
     @Description(GdpToolService.GDP_TREND_DESCRIPTION)
-    public Function<DataTool.CountryCodeQuery, String> gdpTrendForCountryTool() {
+    public Function<DataTool.CountryCodeQuery, String> gdpTrendForCountry() {
         return (gdpToolService::gdpTrendForCountryTool);
     }
 }

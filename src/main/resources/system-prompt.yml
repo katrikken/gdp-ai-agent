@@ -1,9 +1,9 @@
 app.system-message.plan: |
-  You have access to the following data - GDP, Population and GDP per capita since 1960 to 2024 for most countries.
+  You have access to the following data - GDP, Population and GDP per capita since 1960 to 2024 for most countries. You can access it in raw form or as historical trends. Your task is to answer user questions related to these economic metrics.
   * Analyze the user's request.
-  * From the user's request determine key metrics (GDP, Population and GDP per capita) and parameters (country name, year) needed to answer the user query.
+  * From the user's request determine key metrics (GDP, Population and GDP per capita) and parameters (country name, year) needed to answer the user query, in raw or trend format.
   * Output the metrics and parameters you need to answer the question. List country names, years and data types (GDP, Population, GDP per capita) that you need to continue.
-  Example: prompt - "Summarize key economic insights about the Czech republic over the last ten years.", output - "Find GDP, Population and GDP per capita data on Czechia from 2014 to 2024."
+  Example: prompt - "Summarize key economic insights about the Czech republic over the last ten years.", output - "Find GDP, Population and GDP per capita trends data on Czechia from 2014 to 2024."
   User's question: {question} 
 
 app.system-message.tools: | 

@@ -27,19 +27,13 @@ public class GdpPerCapitaToolService extends DataTool {
             "Retrieve GDP per capita records for a specific year sorted by country code. Input YearQuery. " +
                     "Returns a multi-line string with entries formatted as countryCode, year: gdpPerCapita.";
 
-    public static final String GDP_PER_CAPITA_BY_COUNTRY_AND_RANGE_DESCRIPTION =
-            "Retrieve GDP per capita records for a given country within a year range (inclusive). Input CountryCodeYearRangeQuery. " +
-                    "Returns a multi-line string with entries formatted as countryCode, year: gdpPerCapita.";
-
     public static final String GDP_PER_CAPITA_BY_YEAR_RANGE_DESCRIPTION =
             "Retrieve GDP per capita records for all countries within a year range (inclusive). Input YearRangeQuery. " +
                     "Returns a multi-line string with entries formatted as countryCode, year: gdpPerCapita.";
 
     public static final String GDP_PER_CAPITA_TREND_DESCRIPTION =
-            "Return a readable year-by-year GDP per capita trend for a country. Input CountryCodeQuery. " +
-                    "Outputs a multi-line string starting with: \"GDP per capita development for the country {country}:\" " +
-                    "followed by lines: \"{year}: {value}\" for the first record and for subsequent years: " +
-                    "\"{year}: {value}, {+/-difference}, {+/-percentage%}\"";
+            "Return GDP per capita historical trend for a country. Input CountryCodeQuery. " +
+                    "Outputs a multi-line string starting with GDP per capita development for the country including percentage growth.";
 
     private final GdpPerCapitaRepository repository;
 
@@ -74,21 +68,6 @@ public class GdpPerCapitaToolService extends DataTool {
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             return String.format("Error: GDP per capita data not found for year %d.", query.year());
-        }
-    }
-
-
-    @Tool(description = GDP_PER_CAPITA_BY_COUNTRY_AND_RANGE_DESCRIPTION)
-    public String gdpPerCapitaByCountryAndYearRange(CountryCodeYearRangeQuery query) {
-        log.info("gdpPerCapitaByCountryAndYearRange called with query {}", query);
-        try {
-            List<GdpPerCapita> results = repository.findByIdCountryCodeAndIdDataYearBetweenOrderByIdDataYear(
-                    query.countryCode(), query.startYear(), query.endYear());
-            return results.stream().map(this::formatGdpPerCapita).collect(Collectors.joining("\n"));
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return String.format("Error: GDP per capita data not found for country %s between years %d and %d.",
-                    query.countryCode(), query.startYear(), query.endYear());
         }
     }
 

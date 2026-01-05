@@ -27,12 +27,6 @@ public class OllamaGdpPerCapitaToolService {
     }
 
     @Bean
-    @Description(GdpPerCapitaToolService.GDP_PER_CAPITA_BY_COUNTRY_AND_RANGE_DESCRIPTION)
-    public Function<DataTool.CountryCodeYearRangeQuery, String> gdpPerCapitaByCountryAndYearRange() {
-        return (gdpPerCapitaToolService::gdpPerCapitaByCountryAndYearRange);
-    }
-
-    @Bean
     @Description(GdpPerCapitaToolService.GDP_PER_CAPITA_BY_YEAR_RANGE_DESCRIPTION)
     public Function<DataTool.YearRangeQuery, String> gdpPerCapitaByYearRange() {
         return (gdpPerCapitaToolService::gdpPerCapitaByYearRange);
@@ -40,7 +34,7 @@ public class OllamaGdpPerCapitaToolService {
 
     @Bean
     @Description(GdpPerCapitaToolService.GDP_PER_CAPITA_TREND_DESCRIPTION)
-    public Function<DataTool.CountryCodeQuery, String> gdpPerCapitaTrendForCountryTool() {
+    public Function<DataTool.CountryCodeQuery, String> gdpPerCapitaTrendForCountry() {
         return (gdpPerCapitaToolService::gdpPerCapitaTrendForCountryTool);
     }
 }

@@ -36,7 +36,7 @@ public class CountryToolServiceTest {
     void countryNameToCountryCodeTool_SingleMatch_ReturnsCode() {
 
         // THEN: Call the tool and assert the correct country code is returned
-        String result = countryToolService.countryNameToCountryCodeTool("Aruba");
+        String result = countryToolService.countryNameToCountryCodeTool(new DataTool.CountryQuery("Aruba"));
         assertEquals("ABW", result,
                 "Should return the correct country code for a single match.");
     }
@@ -44,21 +44,21 @@ public class CountryToolServiceTest {
     @Test
     void countryNameToCountryCodeTool_PartialMatch_ReturnsCode() {
 
-        String result = countryToolService.countryNameToCountryCodeTool("Kingdom");
+        String result = countryToolService.countryNameToCountryCodeTool(new DataTool.CountryQuery("Kingdom"));
         assertEquals("GBR", result,
                 "Should return the correct country code even with partial input if only one match is found.");
     }
 
     @Test
     void countryNameToCountryCodeTool_NoMatch_ReturnsError() {
-        String result = countryToolService.countryNameToCountryCodeTool("Country");
+        String result = countryToolService.countryNameToCountryCodeTool(new DataTool.CountryQuery("Country"));
         assertEquals("Error: could not find Country code for provided Country name Country", result,
                 "Should return a 'not found' error message.");
     }
 
     @Test
     void countryNameToCountryCodeTool_MultipleMatches_ReturnsError() {
-        String result = countryToolService.countryNameToCountryCodeTool("United");
+        String result = countryToolService.countryNameToCountryCodeTool(new DataTool.CountryQuery("United"));
         assertEquals("Error: several countries match provided country name United", result,
                 "Should return an 'ambiguous match' error message when multiple results are found.");
     }

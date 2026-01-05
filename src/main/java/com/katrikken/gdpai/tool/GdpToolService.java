@@ -33,10 +33,8 @@ public class GdpToolService extends DataTool {
             "Retrieve GDP records between two years inclusive sorted by country code. Input YearRangeQuery. " +
                     "Returns a list of formatted strings: countryCode, year: gdpValue.";
     public static final String GDP_TREND_DESCRIPTION =
-            "Return a readable year-by-year GDP trend for a country. Input CountryCodeQuery. " +
-                    "Outputs a multi-line string starting with: \"GDP development for the country {country}:\" " +
-                    "followed by lines: \"{year}: {gdp}\" for the first record and for subsequent years: " +
-                    "\"{year}: {gdp}, {+/-difference}, {+/-percentage%}\"";
+            "Return GDP historical trend for a country. Input CountryCodeQuery. " +
+                    "Outputs a multi-line string starting with GDP development for the country including growth percentage.";
 
 
     private final GdpRepository repository;
