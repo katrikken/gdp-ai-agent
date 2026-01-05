@@ -26,6 +26,7 @@ const Message = ({ text, isUser, isThinking }) => (
 
 const App = () => {
   const [input, setInput] = useState('');
+  const [model, setModel] = useState('ollama'); // default model
   const [messages, setMessages] = useState([
     { id: 1, text: "Hello! I'm the GDP/Population AI Agent. Ask me for data, like 'What was the GDP of the USA in 2023?'", isUser: false, isThinking: false }
   ]);
@@ -57,7 +58,7 @@ const App = () => {
       const response = await fetch(API_ENDPOINT, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: input.trim() }), // Send prompt as JSON payload
+        body: JSON.stringify({ prompt: input.trim(), model: model }), // Send prompt as JSON payload
       });
 
       if (!response.ok) {
@@ -100,6 +101,22 @@ const App = () => {
                 <span className="bg-blue-600 w-3 h-3 rounded-full mr-2 animate-pulse"></span>
                 GDP-AI Data Agent
             </h1>
+
+
+            {/* Model selector */}
+            <div className="flex items-center space-x-2">
+              <label htmlFor="modelSelect" className="text-sm text-gray-600">Model</label>
+              <select
+                id="modelSelect"
+                value={model}
+                onChange={(e) => setModel(e.target.value)}
+                className="border border-gray-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                disabled={isLoading}
+              >
+                <option value="ollama">ollama</option>
+                <option value="openai">openai</option>
+              </select>
+            </div>
         </div>
 
         {/* Message Area */}
