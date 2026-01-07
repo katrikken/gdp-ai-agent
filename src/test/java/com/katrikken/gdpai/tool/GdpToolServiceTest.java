@@ -33,6 +33,8 @@ public class GdpToolServiceTest {
 
     @BeforeEach
     void setupData() {
+        gdpRepository.deleteAll();
+        countryRepository.deleteAll();
         Country country = new Country(
                 "USA",
                 "USA" + " Test Name",

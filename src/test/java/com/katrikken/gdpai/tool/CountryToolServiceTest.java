@@ -24,6 +24,7 @@ public class CountryToolServiceTest {
 
     @BeforeEach
     void setUp() {
+        repository.deleteAll();
         repository.save(Country.builder().countryCode("ABW").name("Aruba").build());
         repository.save(Country.builder().countryCode("GBR").name("United Kingdom").build());
         repository.save(Country.builder().countryCode("USA").name("United States").build());
@@ -52,7 +53,8 @@ public class CountryToolServiceTest {
     @Test
     void countryNameToCountryCodeTool_NoMatch_ReturnsError() {
         String result = countryToolService.countryNameToCountryCodeTool(new DataTool.CountryQuery("Country"));
-        assertEquals("Error: could not find Country code for provided Country name Country", result,
+        assertEquals("Error: could not find Country code for provided Country name Country. " +
+                        "Some countries have several widely used names, try a different one", result,
                 "Should return a 'not found' error message.");
     }
 

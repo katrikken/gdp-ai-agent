@@ -43,7 +43,6 @@ The application uses Spring Data JPA to abstract database interactions. Dedicate
 3. Service Layer (AI Tools)
 
 ```tool package``` The services are the core logic layer and act as the tools that the AI agent can invoke to execute data queries. These services contain business logic, coordinate data retrieval from repositories, and are automatically registered with the Spring AI framework as callable functions.
-```service package``` The services here are loaders and parsers that retrieve data from provided URLs and save them to the database. The loaders have ```@PostConstruct``` annotation to trigger data loading after startup.
 
 4. REST 
 

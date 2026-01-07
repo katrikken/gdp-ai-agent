@@ -36,6 +36,8 @@ public class GdpRepositoryTests {
      */
     @BeforeEach
     void setupData() {
+        gdpRepository.deleteAll();
+        countryRepository.deleteAll();
         setupCountries(COUNTRY_CODES);
         BigDecimal gdpCounter = new BigDecimal(10000000000L); // Start with a large base number for GDP
 

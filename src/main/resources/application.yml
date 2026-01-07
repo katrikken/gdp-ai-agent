@@ -5,22 +5,10 @@ spring:
   config:
     import: system-prompt.yml, secrets.yml
   ai:
-  #  vertex:
-  #    ai:
-  #      gemini:
-  #        project-id: <YOUR-GOOGLE-CLOUD-PROJECT-ID>
-  #        location: "europe-west1"
-  #        model: "gemini-2.0-flash-lite"
-
-
-  #  retry:
-  #    backoff:
-  #      initial-interval: 22s
-  #      multiplier: 2
     openai:
       chat:
         options:
-          model: "gpt-4.1-nano"
+          model: "gpt-4o-mini"
     ollama:
       base-url: http://localhost:11434
       chat:
@@ -58,9 +46,4 @@ spring:
       # Specifies the SQL file that defines the database structure (schema)
       schema-locations: classpath:sql/schema.sql
       # Specifies the SQL file that populates the database with initial data
-      #data-locations: classpath:sql/data.sql
-app:
-  data:
-    unzip-dir: data
-    gdp-url: https://api.worldbank.org/v2/en/indicator/NY.GDP.MKTP.CD?downloadformat=csv
-    population-url: https://api.worldbank.org/v2/en/indicator/SP.POP.TOTL?downloadformat=csv
+      data-locations: classpath:sql/data.sql
