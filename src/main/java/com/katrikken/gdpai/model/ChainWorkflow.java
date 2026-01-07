@@ -35,6 +35,7 @@ public class ChainWorkflow {
         }
 
         String data = chatClient.prompt(SYSTEM_MESSAGE_TOOLS.replace(QUESTION, dataRequest))
+// this is for openAi only
 //                    .tools(new MathematicalTool(),
 //                            countryToolService,
 //                            gdpToolService,

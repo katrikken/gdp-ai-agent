@@ -86,15 +86,20 @@ public class GdpPerCapitaToolService extends DataTool {
     @Tool(description = GDP_PER_CAPITA_TREND_DESCRIPTION)
     public String gdpPerCapitaTrendForCountryTool(CountryCodeQuery countryCode) {
         log.info("gdpPerCapitaTrendForCountryTool called with CountryCodeQuery {}", countryCode);
-        List<GdpPerCapita> results = repository.findByIdCountryCodeOrderByIdDataYear(countryCode.countryCode());
-        String result = buildTrendForCountry(
-                "GDP per capita development for the country",
-                results,
-                GdpPerCapita::getId,
-                GdpPerCapita::getGdpPerCapita,
-                countryCode.countryCode()
-        );
-        log.debug("Generated GDP per capita trend string:\n{}", result);
-        return result;
+        try {
+            List<GdpPerCapita> results = repository.findByIdCountryCodeOrderByIdDataYear(countryCode.countryCode());
+            String result = buildTrendForCountry(
+                    "GDP per capita development for the country",
+                    results,
+                    GdpPerCapita::getId,
+                    GdpPerCapita::getGdpPerCapita,
+                    countryCode.countryCode()
+            );
+            log.debug("Generated GDP per capita trend string:\n{}", result);
+            return result;
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return String.format("Error: GDP per capita data not found for country %s.", countryCode.countryCode());
+        }
     }
 }

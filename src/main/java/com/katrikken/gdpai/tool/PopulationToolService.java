@@ -122,18 +122,23 @@ public class PopulationToolService extends DataTool {
     @Tool(description = POPULATION_TREND_DESCRIPTION)
     public String populationTrendForCountryTool(CountryCodeQuery countryCode) {
         log.info("populationTrendForCountryTool called with CountryCodeQuery {}", countryCode);
-        List<Population> results = repository.findByIdCountryCodeOrderByIdDataYear(countryCode.countryCode());
-        String result = buildTrendForCountry(
-                "Population development for the country",
-                results,
-                Population::getId,
-                p -> {
-                    Long val = p.getPopulation();
-                    return val == null ? null : new BigDecimal(val);
-                },
-                countryCode.countryCode()
-        );
-        log.debug("Generated Population trend string:\n{}", result);
-        return result;
+        try {
+            List<Population> results = repository.findByIdCountryCodeOrderByIdDataYear(countryCode.countryCode());
+            String result = buildTrendForCountry(
+                    "Population development for the country",
+                    results,
+                    Population::getId,
+                    p -> {
+                        Long val = p.getPopulation();
+                        return val == null ? null : new BigDecimal(val);
+                    },
+                    countryCode.countryCode()
+            );
+            log.debug("Generated Population trend string:\n{}", result);
+            return result;
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return String.format("Error: Population data not found for country %s.", countryCode.countryCode());
+        }
     }
 }

@@ -103,16 +103,21 @@ public class GdpToolService extends DataTool {
     @Tool(description = GDP_TREND_DESCRIPTION)
     public String gdpTrendForCountryTool(CountryCodeQuery countryCode) {
         log.info("gdpTrendForCountryTool called with CountryCodeQuery {}", countryCode);
-        List<Gdp> results = repository.findByIdCountryCodeOrderByIdDataYear(countryCode.countryCode());
-        String result = buildTrendForCountry(
-                "GDP development for the country",
-                results,
-                Gdp::getId,
-                Gdp::getGdp,
-                countryCode.countryCode()
-        );
-        log.debug("Generated GDP trend string:\n{}", result);
-        return result;
+        try {
+            List<Gdp> results = repository.findByIdCountryCodeOrderByIdDataYear(countryCode.countryCode());
+            String result = buildTrendForCountry(
+                    "GDP development for the country",
+                    results,
+                    Gdp::getId,
+                    Gdp::getGdp,
+                    countryCode.countryCode()
+            );
+            log.debug("Generated GDP trend string:\n{}", result);
+            return result;
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return String.format("Error: GDP data not found for country %s", countryCode.countryCode());
+        }
     }
-
 }
+
