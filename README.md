@@ -43,7 +43,6 @@ The application uses Spring Data JPA to abstract database interactions. Dedicate
 3. Service Layer (AI Tools)
 
 ```tool package``` The services are the core logic layer and act as the tools that the AI agent can invoke to execute data queries. These services contain business logic, coordinate data retrieval from repositories, and are automatically registered with the Spring AI framework as callable functions.
-```service package``` The services here are loaders and parsers that retrieve data from provided URLs and save them to the database. The loaders have ```@PostConstruct``` annotation to trigger data loading after startup.
 
 4. REST 
 
@@ -73,6 +72,15 @@ Before running the application, create file *src/main/resources/secrets.yml* fil
 ```
 spring.ai.openai.api-key: {your api key}
 ```
+3) Configuration for Ollama
+
+- Install Ollama following official instructions from https://docs.ollama.com/quickstart
+- run the Mistral model or the model of choice that supports tools and is set in the application.yml
+
+```
+ollama run mistral
+```
+
 
 ### 🛠️ Running the Application
 
@@ -97,10 +105,10 @@ You can interact with the running application using the following interfaces:
 
 ### Example API Usage (cURL)
 
-You can test the chat endpoint from your terminal:
+You can test the chat endpoint from your terminal (example for Windows Command Prompt):
 
 ```
-curl -X POST http://localhost:8080/chat -H "Content-Type: text/plain" --data-raw "Which country had the highest GDP in 2023?"
+curl -X POST http://localhost:8080/chat -H "Content-Type: application/json" -d "{\"model\": \"ollama\", \"prompt\": \"What was the GDP per capita of Germany in 2024?\"}"
 ```
 
 

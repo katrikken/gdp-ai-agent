@@ -8,9 +8,8 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.ai.tool.annotation.Tool;
 import org.springframework.stereotype.Service;
 
-import java.util.Comparator;
+import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -19,27 +18,51 @@ import java.util.stream.Collectors;
 @Log4j2
 public class GdpToolService extends DataTool {
 
+    public static final String INSERT_GDP_DESCRIPTION =
+            "Insert a GDP record. Input a Gdp entity. Returns a single formatted string: countryCode, year: gdpValue.";
+    public static final String GET_GDP_BY_COUNTRY_YEAR_DESCRIPTION =
+            "Retrieve a single GDP record for a specific country code and year. Input CountryCodeYearQuery. " +
+                    "Returns a single formatted string: countryCode, year: gdpValue or an explanatory message if not found.";
+    public static final String GET_GDP_BY_COUNTRY_DESCRIPTION =
+            "Retrieve all GDP records for a given country, found by country code sorted by year. Input CountryCodeQuery. " +
+                    "Returns a list of formatted strings: countryCode, year: gdpValue.";
+    public static final String GET_GDP_BY_YEAR_DESCRIPTION =
+            "Retrieve all GDP records for a specific year sorted by country code. Input YearQuery. " +
+                    "Returns a list of formatted strings: countryCode, year: gdpValue.";
+    public static final String GET_GDP_BETWEEN_YEARS_DESCRIPTION =
+            "Retrieve GDP records between two years inclusive sorted by country code. Input YearRangeQuery. " +
+                    "Returns a list of formatted strings: countryCode, year: gdpValue.";
+    public static final String GDP_TREND_DESCRIPTION =
+            "Return GDP historical trend for a country. Input CountryCodeQuery. " +
+                    "Outputs a multi-line string starting with GDP development for the country including growth percentage.";
+
+
     private final GdpRepository repository;
 
-    @Tool(description = "Returns all known GDP data (List).")
-    public List<Gdp> getAllGdpTool() {
-        log.info("getAllGdpTool called");
-        return repository.findAll();
+    private String formatGdp(Gdp g) {
+        if (g == null) {
+            return "null record";
+        }
+        CountryYearId id = g.getId();
+        String value = Optional.ofNullable(g.getGdp()).map(BigDecimal::toString).orElse("null");
+        return String.format("%s, %d: %s", id.getCountryCode(), id.getDataYear(), value);
     }
 
-    @Tool(description = "Inserts GDP data (Gdp).")
-    public Gdp insertGdpTool(Gdp gdp) {
+    @Tool(description = INSERT_GDP_DESCRIPTION)
+    public String insertGdpTool(Gdp gdp) {
         log.info("insertGdpTool called with GDP {}", gdp);
-        return repository.save(gdp);
+        Gdp saved = repository.save(gdp);
+        return formatGdp(saved);
     }
 
-    @Tool(description = "Takes a CountryCodeYearQuery (countryCode, year) and returns GDP data (String).")
+
+    @Tool(description = GET_GDP_BY_COUNTRY_YEAR_DESCRIPTION)
     public String gdpByCountryCodeYearTool(CountryCodeYearQuery query) {
         log.info("gdpByCountryCodeYearTool called with CountryCodeYearQuery {}", query);
         try {
             Optional<Gdp> gdp = repository.findById(new CountryYearId(query.countryCode(), query.year()));
             if (gdp.isPresent()) {
-                return String.valueOf(gdp.get().getGdp());
+                return formatGdp(gdp.get());
             } else {
                 return String.format("GDP data are not available for country code %s in year %d",
                         query.countryCode(), query.year());
@@ -51,49 +74,50 @@ public class GdpToolService extends DataTool {
         }
     }
 
-    @Tool(description = "Takes a CountryCodeQuery (countryCode) and returns GDP data list sorted by year (List).")
-    public List gdpByCountryCodeTool(CountryCodeQuery countryCode) {
+    @Tool(description = GET_GDP_BY_COUNTRY_DESCRIPTION)
+    public String gdpByCountryCodeTool(CountryCodeQuery countryCode) {
         log.info("gdpByCountryCodeTool called with CountryCodeQuery {}", countryCode);
         try {
-            return repository.findByIdCountryCodeOrderByIdDataYear(countryCode.countryCode());
+            List<Gdp> results = repository.findByIdCountryCodeOrderByIdDataYear(countryCode.countryCode());
+            return results.stream().map(this::formatGdp).collect(Collectors.joining("\n"));
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            return List.of(String.format("Error: GDP data not found for country code %s.", countryCode));
+            return String.format("Error: GDP data not found for country code %s.", countryCode.countryCode());
         }
     }
 
-    @Tool(description = "Takes a YearQuery (year) and returns GDP data list sorted by Country Code (List).")
-    public List<Gdp> gdpByYearTool(YearQuery year) {
+    @Tool(description = GET_GDP_BY_YEAR_DESCRIPTION)
+    public String gdpByYearTool(YearQuery year) {
         log.info("gdpByYearTool called with YearQuery {}", year);
-        return repository.findByIdDataYearOrderByIdCountryCode(year.year());
+        List<Gdp> results = repository.findByIdDataYearOrderByIdCountryCode(year.year());
+        return results.stream().map(this::formatGdp).collect(Collectors.joining("\n"));
     }
 
-    @Tool(description = "Takes a YearRangeQuery (startYear, endYear) and returns GDP data list sorted by Country Code (List).")
-    public List<Gdp> gdpBetweenYearTool(YearRangeQuery interval) {
+    @Tool(description = GET_GDP_BETWEEN_YEARS_DESCRIPTION)
+    public String gdpBetweenYearTool(YearRangeQuery interval) {
         log.info("gdpBetweenYearTool called with YearRangeQuery {}", interval);
-        return repository
-                .findByIdDataYearBetweenOrderByIdCountryCode(interval.startYear(), interval.endYear());
+        List<Gdp> results = repository.findByIdDataYearBetweenOrderByIdCountryCode(interval.startYear(), interval.endYear());
+        return results.stream().map(this::formatGdp).collect(Collectors.joining("\n"));
     }
 
-    @Tool(description = "Takes a list of Gdp class (List) and returns the list sorted by GDP value (List).")
-    public List<Gdp> gdpSortByGdpValueTool(List<Gdp> gdp) {
-        log.info("gdpSortByGdpValueTool called");
-        return gdp.stream().sorted(Comparator.comparing(Gdp::getGdp)).toList();
-    }
-
-    @Tool(description = "Takes a list of GDP class (List) and returns the map of Country codes to the list of GDP values (List).")
-    public Map<String, List<Gdp>> mapGdpByCountryTool(List<Gdp> GDPs) {
-        log.info("mapGDPsByCountryTool called");
-        return GDPs.stream().collect(Collectors.groupingBy(
-                p -> p.getId().getCountryCode(), Collectors.toList()
-        ));
-    }
-
-    @Tool(description = "Takes a list of GDP class (List) and returns the map of Years to the list of GDP values (List).")
-    public Map<Integer, List<Gdp>> mapGDPsByYearTool(List<Gdp> GDPs) {
-        log.info("mapGDPsByYearTool called");
-        return GDPs.stream().collect(Collectors.groupingBy(
-                p -> p.getId().getDataYear(), Collectors.toList()
-        ));
+    @Tool(description = GDP_TREND_DESCRIPTION)
+    public String gdpTrendForCountryTool(CountryCodeQuery countryCode) {
+        log.info("gdpTrendForCountryTool called with CountryCodeQuery {}", countryCode);
+        try {
+            List<Gdp> results = repository.findByIdCountryCodeOrderByIdDataYear(countryCode.countryCode());
+            String result = buildTrendForCountry(
+                    "GDP development for the country",
+                    results,
+                    Gdp::getId,
+                    Gdp::getGdp,
+                    countryCode.countryCode()
+            );
+            log.debug("Generated GDP trend string:\n{}", result);
+            return result;
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return String.format("Error: GDP data not found for country %s", countryCode.countryCode());
+        }
     }
 }
+

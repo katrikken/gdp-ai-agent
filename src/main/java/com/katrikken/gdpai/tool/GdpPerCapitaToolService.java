@@ -1,5 +1,6 @@
 package com.katrikken.gdpai.tool;
 
+import com.katrikken.gdpai.entity.CountryYearId;
 import com.katrikken.gdpai.entity.GdpPerCapita;
 import com.katrikken.gdpai.repository.GdpPerCapitaRepository;
 import lombok.RequiredArgsConstructor;
@@ -9,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -17,49 +18,88 @@ import java.util.stream.Collectors;
 @Log4j2
 public class GdpPerCapitaToolService extends DataTool {
 
+
+    public static final String GDP_PER_CAPITA_BY_COUNTRY_DESCRIPTION =
+            "Retrieve GDP per capita records for a given country sorted by year. Input CountryCodeQuery. " +
+                    "Returns a multi-line string with entries formatted as countryCode, year: gdpPerCapita.";
+
+    public static final String GDP_PER_CAPITA_BY_YEAR_DESCRIPTION =
+            "Retrieve GDP per capita records for a specific year sorted by country code. Input YearQuery. " +
+                    "Returns a multi-line string with entries formatted as countryCode, year: gdpPerCapita.";
+
+    public static final String GDP_PER_CAPITA_BY_YEAR_RANGE_DESCRIPTION =
+            "Retrieve GDP per capita records for all countries within a year range (inclusive). Input YearRangeQuery. " +
+                    "Returns a multi-line string with entries formatted as countryCode, year: gdpPerCapita.";
+
+    public static final String GDP_PER_CAPITA_TREND_DESCRIPTION =
+            "Return GDP per capita historical trend for a country. Input CountryCodeQuery. " +
+                    "Outputs a multi-line string starting with GDP per capita development for the country including percentage growth.";
+
     private final GdpPerCapitaRepository repository;
 
-    @Tool(description = "A Java Function that takes a CountryCodeQuery record and returns a map of Year to GdpPerCapita value for a specific country.")
-    public Map<Integer, BigDecimal> gdpPerCapitaByCountry(CountryCodeQuery query) {
+
+    private String formatGdpPerCapita(GdpPerCapita g) {
+        if (g == null || g.getId() == null) {
+            return "null record";
+        }
+        CountryYearId id = g.getId();
+        String value = Optional.ofNullable(g.getGdpPerCapita()).map(BigDecimal::toString).orElse("null");
+        return String.format("%s, %d: %s", id.getCountryCode(), id.getDataYear(), value);
+    }
+
+    @Tool(description = GDP_PER_CAPITA_BY_COUNTRY_DESCRIPTION)
+    public String gdpPerCapitaByCountry(CountryCodeQuery query) {
         log.info("gdpPerCapitaByCountry called with query {}", query);
-        return repository.findByIdCountryCodeOrderByIdDataYear(query.countryCode()).stream()
-                .collect(Collectors.toMap(v -> v.getId().getDataYear(), GdpPerCapita::getGdpPerCapita));
+        try {
+            List<GdpPerCapita> results = repository.findByIdCountryCodeOrderByIdDataYear(query.countryCode());
+            return results.stream().map(this::formatGdpPerCapita).collect(Collectors.joining("\n"));
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return String.format("Error: GDP per capita data not found for country code %s.", query.countryCode());
+        }
     }
 
-    @Tool(description = "Takes a YearQuery record and returns a map of Country name to GdpPerCapita value for a specific year.")
-    public Map<String, BigDecimal> gdpPerCapitaByYear(YearQuery query) {
+    @Tool(description = GDP_PER_CAPITA_BY_YEAR_DESCRIPTION)
+    public String gdpPerCapitaByYear(YearQuery query) {
         log.info("gdpPerCapitaByYear called with query {}", query);
-        return repository.findByIdDataYearOrderByIdCountryCode(query.year()).stream()
-                .collect(Collectors.toMap(GdpPerCapita::getName, GdpPerCapita::getGdpPerCapita));
+        try {
+            List<GdpPerCapita> results = repository.findByIdDataYearOrderByIdCountryCode(query.year());
+            return results.stream().map(this::formatGdpPerCapita).collect(Collectors.joining("\n"));
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return String.format("Error: GDP per capita data not found for year %d.", query.year());
+        }
     }
 
-    @Tool(description = "Takes a CountryCodeYearRangeQuery record and returns map of Year to the GDP per capita value for a given country " +
-            "within a given start year and end year range (inclusive).")
-    public Map<Integer, BigDecimal> gdpPerCapitaByCountryAndYearRange(CountryCodeYearRangeQuery query) {
-        log.info("gdpPerCapitaByCountryAndYearRange called with query {}", query);
-        return repository.findByIdDataYearBetweenOrderByIdCountryCode(query.startYear(), query.endYear()).stream()
-                .collect(Collectors.toMap(v -> v.getId().getDataYear(), GdpPerCapita::getGdpPerCapita));
-    }
-
-    @Tool(description = "Takes a YearRangeQuery record and returns the GDP per capita values for all countries within a given start year and end year range (inclusive).")
-    public List<GdpPerCapita> gdpPerCapitaByYearRange(YearRangeQuery query) {
+    @Tool(description = GDP_PER_CAPITA_BY_YEAR_RANGE_DESCRIPTION)
+    public String gdpPerCapitaByYearRange(YearRangeQuery query) {
         log.info("gdpPerCapitaByYearRange called with query {}", query);
-        return repository.findByIdDataYearBetweenOrderByIdCountryCode(query.startYear(), query.endYear());
+        try {
+            List<GdpPerCapita> results = repository.findByIdDataYearBetweenOrderByIdCountryCode(query.startYear(), query.endYear());
+            return results.stream().map(this::formatGdpPerCapita).collect(Collectors.joining("\n"));
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return String.format("Error: GDP per capita data not found between years %d and %d.", query.startYear(), query.endYear());
+        }
     }
 
-    @Tool(description = "Takes a list of GdpPerCapita (List) and returns the map of Country codes to the list of GdpPerCapita values (List).")
-    public Map<String, List<GdpPerCapita>> mapGdpPerCapitaByCountryTool(List<GdpPerCapita> GDPs) {
-        log.info("mapGdpPerCapitaByCountryTool called");
-        return GDPs.stream().collect(Collectors.groupingBy(
-                p -> p.getId().getCountryCode(), Collectors.toList()
-        ));
-    }
-
-    @Tool(description = "Takes a list of GdpPerCapita (List) and returns the map of Years to the list of GdpPerCapita values (List).")
-    public Map<Integer, List<GdpPerCapita>> mapGdpPerCapitaByYearTool(List<GdpPerCapita> GDPs) {
-        log.info("mapGdpPerCapitaByYearTool called");
-        return GDPs.stream().collect(Collectors.groupingBy(
-                p -> p.getId().getDataYear(), Collectors.toList()
-        ));
+    @Tool(description = GDP_PER_CAPITA_TREND_DESCRIPTION)
+    public String gdpPerCapitaTrendForCountryTool(CountryCodeQuery countryCode) {
+        log.info("gdpPerCapitaTrendForCountryTool called with CountryCodeQuery {}", countryCode);
+        try {
+            List<GdpPerCapita> results = repository.findByIdCountryCodeOrderByIdDataYear(countryCode.countryCode());
+            String result = buildTrendForCountry(
+                    "GDP per capita development for the country",
+                    results,
+                    GdpPerCapita::getId,
+                    GdpPerCapita::getGdpPerCapita,
+                    countryCode.countryCode()
+            );
+            log.debug("Generated GDP per capita trend string:\n{}", result);
+            return result;
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return String.format("Error: GDP per capita data not found for country %s.", countryCode.countryCode());
+        }
     }
 }

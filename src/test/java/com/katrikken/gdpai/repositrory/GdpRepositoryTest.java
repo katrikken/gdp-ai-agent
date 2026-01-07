@@ -17,7 +17,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
-public class GdpRepositoryTests {
+public class GdpRepositoryTest {
 
     // Helper data for testing
     private static final List<String> COUNTRY_CODES = Arrays.asList("USA", "CAN", "MEX", "GBR", "FRA");
@@ -36,6 +36,8 @@ public class GdpRepositoryTests {
      */
     @BeforeEach
     void setupData() {
+        gdpRepository.deleteAll();
+        countryRepository.deleteAll();
         setupCountries(COUNTRY_CODES);
         BigDecimal gdpCounter = new BigDecimal(10000000000L); // Start with a large base number for GDP
 

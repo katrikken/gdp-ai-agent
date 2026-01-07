@@ -1,0 +1,55 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Header */
+.header { @apply flex items-center justify-between pb-3 border-b border-gray-200; }
+.headerTitle { @apply text-2xl font-extrabold text-gray-700 flex items-center; }
+.pulseDot { @apply bg-blue-600 w-3 h-3 rounded-full mr-2 animate-pulse; }
+.headerControls { @apply flex items-center space-x-2; }
+.modelLabel { @apply text-sm text-gray-600; }
+.modelSelect { @apply border border-gray-300 rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500; }
+
+/* Message */
+.messageRow { @apply flex w-full; }
+.messageRow.user { @apply justify-end; }
+.messageRow.ai { @apply justify-start; }
+.messageBubble { max-width: 75%; @apply p-3 my-1 rounded-xl shadow-md transition-all duration-300; }
+.messageBubble.user { @apply bg-blue-600 text-white rounded-br-none; }
+.messageBubble.ai { @apply bg-gray-100 text-gray-800 rounded-tl-none; }
+.thinking { @apply flex items-center space-x-2; }
+.messageText { @apply whitespace-pre-wrap; }
+
+/* Chat window */
+.chatWindow { @apply flex flex-col flex-auto h-full p-4 overflow-y-auto space-y-4; }
+
+/* Input */
+.inputArea { @apply mt-4 pt-4 border-t border-gray-200; }
+.form { @apply flex flex-row items-center space-x-3; }
+.input { @apply flex-grow w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors; }
+.sendBtn { @apply flex items-center justify-center h-12 w-12 rounded-full text-white transition-all duration-300 shadow-lg; }
+.sendBtn.loading { @apply bg-gray-400 cursor-not-allowed; }
+.sendBtn.ready { @apply bg-blue-600 hover:bg-blue-700 active:bg-blue-800; }
+
+.custom-scrollbar {
+  /* Firefox */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(156,163,175,0.6) transparent;
+}
+
+/* WebKit (Chrome, Edge, Safari) */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(156,163,175,0.6);
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}

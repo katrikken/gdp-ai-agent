@@ -46,6 +46,9 @@ public class PopulationRepositoryTest {
      */
     @BeforeEach
     void setupData() {
+        populationRepository.deleteAll();
+        countryRepository.deleteAll();
+
         setupCountries(COUNTRY_CODES);
 
         long popCounter = 100000000L;   // Start with a large base number for Population
